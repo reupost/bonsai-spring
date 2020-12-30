@@ -26,10 +26,6 @@ public class TaxonService implements ITaxonService {
         return (Page<Taxon>) repository.findAll(pageable);
     }
 
-    // @Override
-    // public List<Taxon> findPageSet(int pageSize, int page, String sortBy) {
-    //     return (List<Taxon>) repository.findPageSet(pageSize, page, sortBy);
-    // }
 
     @Override
     public Taxon save(Taxon t) {

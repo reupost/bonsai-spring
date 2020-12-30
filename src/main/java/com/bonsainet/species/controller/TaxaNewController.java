@@ -1,7 +1,6 @@
 package com.bonsainet.species.controller;
 
 import com.bonsainet.species.model.Taxon;
-// import com.bonsainet.species.service.ITaxonService;
 
 import com.bonsainet.species.service.ITaxonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +10,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,11 +26,9 @@ public class TaxaNewController {
     private ITaxonService taxonService;
 
     @GetMapping("/taxa")
-    public List<Taxon> findTaxa(/* Model model */) {
+    public List<Taxon> findTaxa() {
         List<Taxon> taxa = taxonService.findAll();
         return taxa;
-        // model.addAttribute("taxa", speciesAll);
-        // return "showTaxa";
     }
 
     @GetMapping("/taxa_page")
@@ -52,8 +46,6 @@ public class TaxaNewController {
         }
         List<Taxon> taxaList = taxaResults.getContent();
         return taxaList;
-        // model.addAttribute("taxa", speciesAll);
-        // return "showTaxa";
     }
 
     @GetMapping("/taxa/count")
