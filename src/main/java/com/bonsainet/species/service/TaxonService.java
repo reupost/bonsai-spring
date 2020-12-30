@@ -3,6 +3,8 @@ package com.bonsainet.species.service;
 import com.bonsainet.species.model.Taxon;
 import com.bonsainet.species.repository.TaxonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +22,16 @@ public class TaxonService implements ITaxonService {
     }
 
     @Override
+    public Page<Taxon> findAll(Pageable pageable) {
+        return (Page<Taxon>) repository.findAll(pageable);
+    }
+
+    // @Override
+    // public List<Taxon> findPageSet(int pageSize, int page, String sortBy) {
+    //     return (List<Taxon>) repository.findPageSet(pageSize, page, sortBy);
+    // }
+
+    @Override
     public Taxon save(Taxon t) {
         t.composeFullName();
         return repository.save(t);
@@ -34,6 +46,11 @@ public class TaxonService implements ITaxonService {
     @Override
     public Optional<Taxon> findById(Integer id) {
         return repository.findById(id);
+    }
+
+    @Override
+    public Page<Taxon> findByFullNameContaining(String fullname, Pageable pageable) {
+        return repository.findByFullNameContaining(fullname, pageable);
     }
 
     @Override

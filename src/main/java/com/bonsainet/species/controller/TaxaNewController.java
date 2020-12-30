@@ -5,6 +5,10 @@ import com.bonsainet.species.model.Taxon;
 
 import com.bonsainet.species.service.ITaxonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,6 +33,25 @@ public class TaxaNewController {
     public List<Taxon> findTaxa(/* Model model */) {
         List<Taxon> taxa = taxonService.findAll();
         return taxa;
+        // model.addAttribute("taxa", speciesAll);
+        // return "showTaxa";
+    }
+
+    @GetMapping("/taxa_page")
+    public List<Taxon> findTaxaForPage(
+            @RequestParam(required = false) String filter,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size
+    ) {
+        Pageable paging = PageRequest.of(page, size);
+        Page<Taxon> taxaResults;
+        if (filter == null) {
+            taxaResults = taxonService.findAll(paging);
+        } else {
+            taxaResults = taxonService.findByFullNameContaining(filter, paging);
+        }
+        List<Taxon> taxaList = taxaResults.getContent();
+        return taxaList;
         // model.addAttribute("taxa", speciesAll);
         // return "showTaxa";
     }
