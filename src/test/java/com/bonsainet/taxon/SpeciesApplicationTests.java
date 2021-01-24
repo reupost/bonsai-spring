@@ -1,4 +1,4 @@
-package com.bonsainet.species;
+package com.bonsainet.taxon;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

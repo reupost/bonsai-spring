@@ -1,4 +1,4 @@
-package com.bonsainet.species.model;
+package com.bonsainet.taxon.model;
 
 import java.util.Objects;
 

@@ -1,4 +1,4 @@
-package com.bonsainet.species;
+package com.bonsainet.taxon;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
