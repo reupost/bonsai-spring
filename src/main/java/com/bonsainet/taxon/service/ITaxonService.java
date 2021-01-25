@@ -11,7 +11,6 @@ public interface ITaxonService {
 
     List<Taxon> findAll();
 
-
     Page<Taxon> findAll(Pageable pageable);
 
     Taxon save(Taxon t);
