@@ -1,22 +1,13 @@
 package com.bonsainet.taxon.model;
 
-
-import javax.persistence.*;
 import java.util.Date;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
-@Entity
-@Table(name = "bonsai")
-public class Bonsai {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
-
-    //public Integer taxonId;
+public class BonsaiTaxonDTO {
+    public Integer bonsaiId;
+    public Integer taxonId;
+    public String taxonFullName;
+    public String taxonFamily;
+    public String taxonGenus;
     public Integer tag;
     public Integer numberOfPlants;
     public String name;
@@ -35,28 +26,22 @@ public class Bonsai {
     public Boolean isNoHoper;
     public String notes;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "taxonId")
-    public Taxon taxon;
+    public BonsaiTaxonDTO() {}
 
-    public Bonsai() {}
-
-    public Bonsai(Integer id, Integer taxonId, Integer tag) {
-        this.id = id;
-        //this.taxonId = taxonId;
+    public BonsaiTaxonDTO(Integer bonsaiId, Integer taxonId, Integer tag) {
+        this.bonsaiId = bonsaiId;
+        this.taxonId = taxonId;
         this.tag = tag;
-    }
-
-    public Taxon getTaxon() {
-        return taxon;
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Bonsai{");
-        sb.append("id=").append(id);
-        //sb.append(", taxonId=").append(taxonId);
-        sb.append(", taxonId=").append(taxon.id);
+        final StringBuilder sb = new StringBuilder("BonsaiTaxonDTO{");
+        sb.append("bonsaiId=").append(bonsaiId);
+        sb.append(", taxonId=").append(taxonId);
+        sb.append(", taxonFullName='").append(taxonFullName).append('\'');
+        sb.append(", taxonFamily='").append(taxonFamily).append('\'');
+        sb.append(", taxonGenus='").append(taxonGenus).append('\'');
         sb.append(", tag=").append(tag);
         sb.append(", numberOfPlants=").append(numberOfPlants);
         sb.append(", name='").append(name).append('\'');
@@ -72,7 +57,7 @@ public class Bonsai {
         sb.append(", stage='").append(stage).append('\'');
         sb.append(", style='").append(style).append('\'');
         sb.append(", isGrafted=").append(isGrafted);
-        sb.append(", isNoHoper='").append(isNoHoper);
+        sb.append(", isNoHoper=").append(isNoHoper);
         sb.append(", notes='").append(notes).append('\''); // TODO: illegal chars?
         sb.append('}');
         return sb.toString();

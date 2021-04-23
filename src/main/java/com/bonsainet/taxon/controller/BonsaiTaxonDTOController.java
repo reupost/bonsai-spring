@@ -1,39 +1,32 @@
 package com.bonsainet.taxon.controller;
 
-import com.bonsainet.taxon.model.Bonsai;
-
-import com.bonsainet.taxon.service.IBonsaiService;
+import com.bonsainet.taxon.model.BonsaiTaxonDTO;
+import com.bonsainet.taxon.service.IBonsaiTaxonDTOService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
-
-import static java.lang.Thread.sleep;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-public class BonsaiController {
+public class BonsaiTaxonDTOController {
 
     @Autowired
-    private IBonsaiService bonsaiService;
+    private IBonsaiTaxonDTOService bonsaiTaxonDTOService;
 
-    @GetMapping("/bonsais")
-    public List<Bonsai> findBonsais() {
-        List<Bonsai> bonsais = bonsaiService.findAll();
-        return bonsais;
+    @GetMapping("/bonsaisfull")
+    public List<BonsaiTaxonDTO> findBonsaisFullDetails() {
+        List<BonsaiTaxonDTO> bonsaisFullDetails = bonsaiTaxonDTOService.findAll();
+        return bonsaisFullDetails;
     }
 
 
-    @GetMapping("/bonsais_page")
-    public Page<Bonsai> findBonsaisForPage2(
+    @GetMapping("/bonsaisfull_page")
+    public Page<BonsaiTaxonDTO> findBonsaisFullDetailsForPage(
             @RequestParam(required = false) String filter,
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) String dir,
@@ -75,34 +68,18 @@ public class BonsaiController {
             sortClean = Sort.by(sortBy).descending().and(Sort.by("name"));
         }
         Pageable paging = PageRequest.of(page, size, sortClean);
-        Page<Bonsai> bonsaiResults;
+        Page<BonsaiTaxonDTO> bonsaiFullResults;
         if (filter == null) {
-            bonsaiResults = bonsaiService.findAll(paging);
+            bonsaiFullResults = bonsaiTaxonDTOService.findAll(paging);
         } else {
-            bonsaiResults = bonsaiService.findByNameContaining(filter, paging);
+            bonsaiFullResults = bonsaiTaxonDTOService.findByNameContaining(filter, paging);
         }
-        return bonsaiResults;
+        return bonsaiFullResults;
     }
 
-    @GetMapping("/bonsais/count")
+    @GetMapping("/bonsaisfull/count")
     public Long countBonsais() {
-        return bonsaiService.count();
+        return bonsaiTaxonDTOService.count();
     }
 
-    @PutMapping(path="/bonsai")
-    public Bonsai setBonsai(@Valid @RequestBody Bonsai t) throws InterruptedException {
-        sleep(1000);
-        return bonsaiService.save(t);
-    }
-
-    @DeleteMapping(path="/bonsais/del/{id}")
-    public ResponseEntity<Long> deleteBonsai(@PathVariable Integer id) {
-        Optional<Bonsai> t = bonsaiService.findById(id);
-        if (t.isPresent()) {
-            bonsaiService.delete(t.get());
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
 }
