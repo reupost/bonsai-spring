@@ -16,12 +16,14 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 public class BonsaiDTOController {
 
+    //TODO: add list of sortable fields, or retrieve these from BonsaiDTO class
+
     @Autowired
-    private IBonsaiDTOService bonsaiTaxonDTOService;
+    private IBonsaiDTOService bonsaiDTOService;
 
     @GetMapping("/bonsaisdto")
     public List<BonsaiDTO> findBonsaisDTODetails() {
-        List<BonsaiDTO> bonsaisFullDetails = bonsaiTaxonDTOService.findAll();
+        List<BonsaiDTO> bonsaisFullDetails = bonsaiDTOService.findAll();
         return bonsaisFullDetails;
     }
 
@@ -52,6 +54,7 @@ public class BonsaiDTOController {
             if (dir.size() > i) {
                 if (dir.get(i).equalsIgnoreCase("DESC")) sortDir = Sort.Direction.DESC;
             }
+            //TODO refactor to use list
             if (sortItem.equalsIgnoreCase("tag")) {
                 sortBy.add(new Sort.Order(sortDir,"tag"));
             } else if (sortItem.equalsIgnoreCase("taxonFullName")) {
@@ -74,20 +77,23 @@ public class BonsaiDTOController {
         sortBy.add(new Sort.Order(Sort.Direction.ASC,"tag"));
 
         Sort sortFinal = Sort.by(sortBy);
+        if (size < 1) size = 1;
+        if (size > 100) size = 100;
+        if (page < 0) page = 0;
         Pageable paging = PageRequest.of(page, size, sortFinal);
 
         Page<BonsaiDTO> bonsaiFullResults;
         if (filter == null) {
-            bonsaiFullResults = bonsaiTaxonDTOService.findAll(paging);
+            bonsaiFullResults = bonsaiDTOService.findAll(paging);
         } else {
-            bonsaiFullResults = bonsaiTaxonDTOService.findByNameContaining(filter, paging);
+            bonsaiFullResults = bonsaiDTOService.findByNameContaining(filter, paging);
         }
         return bonsaiFullResults;
     }
 
     @GetMapping("/bonsaisdto/count")
     public Long countBonsais() {
-        return bonsaiTaxonDTOService.count();
+        return bonsaiDTOService.count();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.bonsainet.taxon.controller;
 
+import com.bonsainet.taxon.model.BonsaiDTO;
 import com.bonsainet.taxon.model.Taxon;
 
 import com.bonsainet.taxon.service.ITaxonService;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,47 +33,52 @@ public class TaxonController {
         return taxa;
     }
 
+    /**
+     * Get a page of taxa.
+     *
+     * @param filter    filter for full name contains
+     * @param sort      sort field list
+     * @param dir       sort direction list (paired with sort fields)
+     * @param page      page (0-indexed)
+     * @param size      page size
+     * @return
+     */
     @GetMapping("/taxa_page")
-    public Page<Taxon> findTaxaForPage2(
+    public Page<Taxon> findTaxaForPage(
             @RequestParam(required = false) String filter,
-            @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String dir,
+            @RequestParam(required = false) List<String> sort,
+            @RequestParam(required = false) List<String> dir,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         // sanitise
-        String sortBy = "fullName";
-        String sortDir = "ASC";
-        Sort sortClean;
-        if (sort == null) sort = "";
-        if (dir == null) dir = "";
-        if (sort.equalsIgnoreCase("family")) {
-            sortBy = "family";
-        } else if (sort.equalsIgnoreCase("genus")) {
-            sortBy = "genus";
-        } else if (sort.equalsIgnoreCase("commonName")) {
-            sortBy = "commonName";
-        } else if (sort.equalsIgnoreCase("generalType")) {
-            sortBy = "generalType";
-        } else if (sort.equalsIgnoreCase("countBonsais")) {
-            sortBy = "countBonsais";
+        ArrayList<Sort.Order> sortBy = new ArrayList<>();
+        for (int i = 0; i < sort.size(); i++) {
+            String sortItem = sort.get(i);
+            Sort.Direction sortDir = Sort.Direction.ASC;
+            if (dir.size() > i) {
+                if (dir.get(i).equalsIgnoreCase("DESC")) sortDir = Sort.Direction.DESC;
+            }
+            if (sortItem.equalsIgnoreCase("family")) {
+                sortBy.add(new Sort.Order(sortDir,"family"));
+            } else if (sortItem.equalsIgnoreCase("genus")) {
+                sortBy.add(new Sort.Order(sortDir,"genus"));
+            } else if (sortItem.equalsIgnoreCase("commonName")) {
+                sortBy.add(new Sort.Order(sortDir,"commonName"));
+            } else if (sortItem.equalsIgnoreCase("generalType")) {
+                sortBy.add(new Sort.Order(sortDir,"generalType"));
+            } else if (sortItem.equalsIgnoreCase("countBonsais")) {
+                sortBy.add(new Sort.Order(sortDir,"countBonsais"));
+            }
         }
-        //TODO: could add multiple sorts with param sort=field1,dir1&sort=field2,dir2 etc.
-        /*
-        List<Order> orders = new ArrayList<Order>();
-        Order order1 = new Order(Sort.Direction.DESC, "commonName");
-        orders.add(order1);
-        Order order2 = new Order(Sort.Direction.ASC, "countBonsais");
-        orders.add(order2);
-        sortClean = Sort.by(orders));
-         */
-        if (dir.equalsIgnoreCase("DESC")) sortDir = "DESC";
-        if (sortDir == "ASC") {
-            sortClean = Sort.by(sortBy).ascending().and(Sort.by("fullName"));
-        } else {
-            sortClean = Sort.by(sortBy).descending().and(Sort.by("fullName"));
-        }
-        Pageable paging = PageRequest.of(page, size, sortClean);
+        sortBy.add(new Sort.Order(Sort.Direction.ASC,"fullName"));
+
+        Sort sortFinal = Sort.by(sortBy);
+        if (size < 1) size = 1;
+        if (size > 100) size = 100;
+        if (page < 0) page = 0;
+        Pageable paging = PageRequest.of(page, size, sortFinal);
+
         Page<Taxon> taxaResults;
         if (filter == null) {
             taxaResults = taxonService.findAll(paging);

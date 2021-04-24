@@ -2,6 +2,7 @@ package com.bonsainet.taxon.controller;
 
 import com.bonsainet.taxon.model.Bonsai;
 
+import com.bonsainet.taxon.model.Taxon;
 import com.bonsainet.taxon.service.IBonsaiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,48 +35,43 @@ public class BonsaiController {
 
 
     @GetMapping("/bonsais_page")
-    public Page<Bonsai> findBonsaisForPage2(
+    public Page<Bonsai> findBonsaisForPage(
             @RequestParam(required = false) String filter,
-            @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String dir,
+            @RequestParam(required = false) List<String> sort,
+            @RequestParam(required = false) List<String> dir,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         // sanitise
-        String sortBy = "name";
-        String sortDir = "ASC";
-        Sort sortClean;
-        if (sort == null) sort = "";
-        if (dir == null) dir = "";
-        if (sort.equalsIgnoreCase("tag")) {
-            sortBy = "tag";
-        } else if (sort.equalsIgnoreCase("dateAcquired")) {
-            sortBy = "dateAcquired";
-        } else if (sort.equalsIgnoreCase("yearStarted")) {
-            sortBy = "yearStarted";
-        } else if (sort.equalsIgnoreCase("source")) {
-            sortBy = "source";
-        } else if (sort.equalsIgnoreCase("style")) {
-            sortBy = "style";
-        } else if (sort.equalsIgnoreCase("stateWhenAcquired")) {
-            sortBy = "stateWhenAcquired";
+        ArrayList<Sort.Order> sortBy = new ArrayList<>();
+        for (int i = 0; i < sort.size(); i++) {
+            String sortItem = sort.get(i);
+            Sort.Direction sortDir = Sort.Direction.ASC;
+            if (dir.size() > i) {
+                if (dir.get(i).equalsIgnoreCase("DESC")) sortDir = Sort.Direction.DESC;
+            }
+            if (sortItem.equalsIgnoreCase("tag")) {
+                sortBy.add(new Sort.Order(sortDir, "tag"));
+            } else if (sortItem.equalsIgnoreCase("dateAcquired")) {
+                sortBy.add(new Sort.Order(sortDir, "dateAcquired"));
+            } else if (sortItem.equalsIgnoreCase("yearStarted")) {
+                sortBy.add(new Sort.Order(sortDir, "yearStarted"));
+            } else if (sortItem.equalsIgnoreCase("source")) {
+                sortBy.add(new Sort.Order(sortDir, "source"));
+            } else if (sortItem.equalsIgnoreCase("style")) {
+                sortBy.add(new Sort.Order(sortDir, "style"));
+            } else if (sortItem.equalsIgnoreCase("stateWhenAcquired")) {
+                sortBy.add(new Sort.Order(sortDir, "stateWhenAcquired"));
+            }
         }
-        //TODO: could add multiple sorts with param sort=field1,dir1&sort=field2,dir2 etc.
-        /*
-        List<Order> orders = new ArrayList<Order>();
-        Order order1 = new Order(Sort.Direction.DESC, "commonName");
-        orders.add(order1);
-        Order order2 = new Order(Sort.Direction.ASC, "countBonsais");
-        orders.add(order2);
-        sortClean = Sort.by(orders));
-         */
-        if (dir.equalsIgnoreCase("DESC")) sortDir = "DESC";
-        if (sortDir == "ASC") {
-            sortClean = Sort.by(sortBy).ascending().and(Sort.by("name"));
-        } else {
-            sortClean = Sort.by(sortBy).descending().and(Sort.by("name"));
-        }
-        Pageable paging = PageRequest.of(page, size, sortClean);
+        sortBy.add(new Sort.Order(Sort.Direction.ASC,"tag"));
+
+        Sort sortFinal = Sort.by(sortBy);
+        if (size < 1) size = 1;
+        if (size > 100) size = 100;
+        if (page < 0) page = 0;
+        Pageable paging = PageRequest.of(page, size, sortFinal);
+
         Page<Bonsai> bonsaiResults;
         if (filter == null) {
             bonsaiResults = bonsaiService.findAll(paging);
