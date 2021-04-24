@@ -2,7 +2,7 @@ package com.bonsainet.taxon.model;
 
 import java.util.Date;
 
-public class BonsaiTaxonDTO {
+public class BonsaiDTO {
     public Integer bonsaiId;
     public Integer taxonId;
     public String taxonFullName;
@@ -26,9 +26,9 @@ public class BonsaiTaxonDTO {
     public Boolean isNoHoper;
     public String notes;
 
-    public BonsaiTaxonDTO() {}
+    public BonsaiDTO() {}
 
-    public BonsaiTaxonDTO(Integer bonsaiId, Integer taxonId, Integer tag) {
+    public BonsaiDTO(Integer bonsaiId, Integer taxonId, Integer tag) {
         this.bonsaiId = bonsaiId;
         this.taxonId = taxonId;
         this.tag = tag;
