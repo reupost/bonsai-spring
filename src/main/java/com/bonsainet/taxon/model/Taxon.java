@@ -7,25 +7,27 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "taxon")
+@Data
 public class Taxon {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  public Integer id;
+  private Integer id;
 
-  public String family;
-  public String genus;
-  public String species;
-  public String cultivar;
-  public String commonName;
-  public String generalType;
-  public Integer countBonsais;
-  public String fullName;
+  private String family;
+  private String genus;
+  private String species;
+  private String cultivar;
+  private String commonName;
+  private String generalType;
+  private Integer countBonsais;
+  private String fullName;
 
-  public Taxon() {
+  private Taxon() {
   }
 
   public Taxon(Integer id, String family, String genus, String species, String cultivar,
@@ -52,7 +54,7 @@ public class Taxon {
     return true;
   }
 
-  @Override
+  /* @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("Taxon{");
     sb.append("id=").append(id);
@@ -66,6 +68,6 @@ public class Taxon {
     sb.append(", countBonsais=").append(countBonsais);
     sb.append('}');
     return sb.toString();
-  }
+  } */
 
 }

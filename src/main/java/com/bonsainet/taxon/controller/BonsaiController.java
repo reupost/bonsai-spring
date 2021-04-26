@@ -32,8 +32,7 @@ public class BonsaiController {
 
   @GetMapping("/bonsais")
   public List<Bonsai> findBonsais() {
-    List<Bonsai> bonsais = bonsaiService.findAll();
-    return bonsais;
+    return bonsaiService.findAll();
   }
 
 
@@ -92,7 +91,7 @@ public class BonsaiController {
 
   @PutMapping(path = "/bonsai")
   public Bonsai setBonsai(@Valid @RequestBody Bonsai t) throws InterruptedException {
-    sleep(1000);
+    // sleep(1000);
     return bonsaiService.save(t);
   }
 

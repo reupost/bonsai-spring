@@ -55,30 +55,30 @@ public class BonsaiDTOService implements IBonsaiDTOService {
 
   public BonsaiDTO convertToBonsaiDTO(Bonsai bonsai) {
     BonsaiDTO bonsaiDTO = new BonsaiDTO();
-    bonsaiDTO.bonsaiId = bonsai.id;
-    bonsaiDTO.costAmount = bonsai.costAmount;
-    bonsaiDTO.tag = bonsai.tag;
-    bonsaiDTO.dateAcquired = bonsai.dateAcquired;
-    bonsaiDTO.dateSold = bonsai.dateSold;
-    bonsaiDTO.isGrafted = bonsai.isGrafted;
-    bonsaiDTO.isNoHoper = bonsai.isNoHoper;
-    bonsaiDTO.isYearStartedGuess = bonsai.isYearStartedGuess;
-    bonsaiDTO.name = bonsai.name;
-    bonsaiDTO.notes = bonsai.notes;
-    bonsaiDTO.numberOfPlants = bonsai.numberOfPlants;
-    bonsaiDTO.soldForAmount = bonsai.soldForAmount;
-    bonsaiDTO.source = bonsai.source;
-    bonsaiDTO.stage = bonsai.stage;
-    bonsaiDTO.stateWhenAcquired = bonsai.stateWhenAcquired;
-    bonsaiDTO.style = bonsai.style;
-    bonsaiDTO.yearDied = bonsai.yearDied;
-    bonsaiDTO.yearStarted = bonsai.yearStarted;
+    bonsaiDTO.setBonsaiId(bonsai.getId());
+    bonsaiDTO.setCostAmount(bonsai.getCostAmount());
+    bonsaiDTO.setTag(bonsai.getTag());
+    bonsaiDTO.setDateAcquired(bonsai.getDateAcquired());
+    bonsaiDTO.setDateSold(bonsai.getDateSold());
+    bonsaiDTO.setIsGrafted(bonsai.getIsGrafted());
+    bonsaiDTO.setIsNoHoper(bonsai.getIsNoHoper());
+    bonsaiDTO.setIsYearStartedGuess(bonsai.getIsYearStartedGuess());
+    bonsaiDTO.setName(bonsai.getName());
+    bonsaiDTO.setNotes(bonsai.getNotes());
+    bonsaiDTO.setNumberOfPlants(bonsai.getNumberOfPlants());
+    bonsaiDTO.setSoldForAmount(bonsai.getSoldForAmount());
+    bonsaiDTO.setSource(bonsai.getSource());
+    bonsaiDTO.setStage(bonsai.getStage());
+    bonsaiDTO.setStateWhenAcquired(bonsai.getStateWhenAcquired());
+    bonsaiDTO.setStyle(bonsai.getStyle());
+    bonsaiDTO.setYearDied(bonsai.getYearDied());
+    bonsaiDTO.setYearStarted(bonsai.getYearStarted());
 
     Taxon taxon = bonsai.getTaxon();
-    bonsaiDTO.taxonId = taxon.id;
-    bonsaiDTO.taxonFamily = taxon.family;
-    bonsaiDTO.taxonGenus = taxon.genus;
-    bonsaiDTO.taxonFullName = taxon.fullName;
+    bonsaiDTO.setTaxonId(taxon.getId());
+    bonsaiDTO.setTaxonFamily(taxon.getFamily());
+    bonsaiDTO.setTaxonGenus(taxon.getGenus());
+    bonsaiDTO.setTaxonFullName(taxon.getFullName());
 
     return bonsaiDTO;
   }

@@ -24,8 +24,7 @@ public class BonsaiDTOController {
 
   @GetMapping("/bonsaisdto")
   public List<BonsaiDTO> findBonsaisDTODetails() {
-    List<BonsaiDTO> bonsaisFullDetails = bonsaiDTOService.findAll();
-    return bonsaisFullDetails;
+    return bonsaiDTOService.findAll();
   }
 
 

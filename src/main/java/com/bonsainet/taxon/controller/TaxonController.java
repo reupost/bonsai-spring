@@ -32,8 +32,7 @@ public class TaxonController {
 
   @GetMapping("/taxa")
   public List<Taxon> findTaxa() {
-    List<Taxon> taxa = taxonService.findAll();
-    return taxa;
+    return taxonService.findAll();
   }
 
   /**

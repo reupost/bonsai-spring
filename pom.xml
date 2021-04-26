@@ -79,13 +79,27 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
     </dependencies>
+
+    <!-- not needed? -->
+    <repositories>
+        <repository>
+            <id>projectlombok.org</id>
+            <url>http://projectlombok.org/mavenrepo</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.4.0</version>
             </plugin>
         </plugins>
     </build>

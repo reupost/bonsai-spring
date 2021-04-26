@@ -1,31 +1,33 @@
 package com.bonsainet.taxon.model;
 
 import java.util.Date;
+import lombok.Data;
 
+@Data
 public class BonsaiDTO {
 
-  public Integer bonsaiId;
-  public Integer taxonId;
-  public String taxonFullName;
-  public String taxonFamily;
-  public String taxonGenus;
-  public Integer tag;
-  public Integer numberOfPlants;
-  public String name;
-  public String source;
-  public String stateWhenAcquired;
-  public Date dateAcquired;
-  public Float costAmount;
-  public Integer yearStarted;
-  public Boolean isYearStartedGuess;
-  public Integer yearDied;
-  public Date dateSold;
-  public Float soldForAmount;
-  public String stage;
-  public String style;
-  public Boolean isGrafted;
-  public Boolean isNoHoper;
-  public String notes;
+  private Integer bonsaiId;
+  private Integer taxonId;
+  private String taxonFullName;
+  private String taxonFamily;
+  private String taxonGenus;
+  private Integer tag;
+  private Integer numberOfPlants;
+  private String name;
+  private String source;
+  private String stateWhenAcquired;
+  private Date dateAcquired;
+  private Float costAmount;
+  private Integer yearStarted;
+  private Boolean isYearStartedGuess;
+  private Integer yearDied;
+  private Date dateSold;
+  private Float soldForAmount;
+  private String stage;
+  private String style;
+  private Boolean isGrafted;
+  private Boolean isNoHoper;
+  private String notes;
 
   public BonsaiDTO() {
   }
@@ -36,7 +38,7 @@ public class BonsaiDTO {
     this.tag = tag;
   }
 
-  @Override
+  /* @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("BonsaiTaxonDTO{");
     sb.append("bonsaiId=").append(bonsaiId);
@@ -63,6 +65,6 @@ public class BonsaiDTO {
     sb.append(", notes='").append(notes).append('\''); // TODO: illegal chars?
     sb.append('}');
     return sb.toString();
-  }
+  } */
 
 }
