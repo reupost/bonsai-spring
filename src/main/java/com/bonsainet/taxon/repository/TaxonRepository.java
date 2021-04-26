@@ -8,5 +8,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface TaxonRepository extends PagingAndSortingRepository<Taxon, Integer> {
 
-    Page<Taxon> findByFullNameContaining(String fullname, Pageable pageable);
+  Page<Taxon> findByFullNameContaining(String fullname, Pageable pageable);
 }

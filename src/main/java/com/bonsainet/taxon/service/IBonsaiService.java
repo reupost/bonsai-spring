@@ -8,18 +8,18 @@ import java.util.Optional;
 
 public interface IBonsaiService {
 
-    List<Bonsai> findAll();
+  List<Bonsai> findAll();
 
 
-    Page<Bonsai> findAll(Pageable pageable);
+  Page<Bonsai> findAll(Pageable pageable);
 
-    Bonsai save(Bonsai b);
+  Bonsai save(Bonsai b);
 
-    void delete(Bonsai b);
+  void delete(Bonsai b);
 
-    Optional<Bonsai> findById(Integer id);
+  Optional<Bonsai> findById(Integer id);
 
-    Page<Bonsai> findByNameContaining(String name, Pageable pageable);
+  Page<Bonsai> findByNameContaining(String name, Pageable pageable);
 
-    Long count();
+  Long count();
 }

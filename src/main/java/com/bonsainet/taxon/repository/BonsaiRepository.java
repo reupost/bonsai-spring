@@ -8,5 +8,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface BonsaiRepository extends PagingAndSortingRepository<Bonsai, Integer> {
 
-    Page<Bonsai> findByNameContaining(String name, Pageable pageable);
+  Page<Bonsai> findByNameContaining(String name, Pageable pageable);
 }

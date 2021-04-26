@@ -13,42 +13,42 @@ import java.util.Optional;
 @Service
 public class BonsaiService implements IBonsaiService {
 
-    @Autowired
-    private BonsaiRepository repository;
+  @Autowired
+  private BonsaiRepository repository;
 
-    @Override
-    public List<Bonsai> findAll() {
-        return (List<Bonsai>) repository.findAll();
-    }
+  @Override
+  public List<Bonsai> findAll() {
+    return (List<Bonsai>) repository.findAll();
+  }
 
-    @Override
-    public Page<Bonsai> findAll(Pageable pageable) {
-        return (Page<Bonsai>) repository.findAll(pageable);
-    }
+  @Override
+  public Page<Bonsai> findAll(Pageable pageable) {
+    return (Page<Bonsai>) repository.findAll(pageable);
+  }
 
 
-    @Override
-    public Bonsai save(Bonsai b) {
-        return repository.save(b);
-    }
+  @Override
+  public Bonsai save(Bonsai b) {
+    return repository.save(b);
+  }
 
-    @Override
-    public void delete(Bonsai t) {
-        repository.delete(t);
-    }
+  @Override
+  public void delete(Bonsai t) {
+    repository.delete(t);
+  }
 
-    @Override
-    public Optional<Bonsai> findById(Integer id) {
-        return repository.findById(id);
-    }
+  @Override
+  public Optional<Bonsai> findById(Integer id) {
+    return repository.findById(id);
+  }
 
-    @Override
-    public Page<Bonsai> findByNameContaining(String name, Pageable pageable) {
-        return repository.findByNameContaining(name, pageable);
-    }
+  @Override
+  public Page<Bonsai> findByNameContaining(String name, Pageable pageable) {
+    return repository.findByNameContaining(name, pageable);
+  }
 
-    @Override
-    public Long count() {
-        return repository.count();
-    }
+  @Override
+  public Long count() {
+    return repository.count();
+  }
 }

@@ -13,44 +13,44 @@ import java.util.Optional;
 @Service
 public class TaxonService implements ITaxonService {
 
-    @Autowired
-    private TaxonRepository repository;
+  @Autowired
+  private TaxonRepository repository;
 
-    @Override
-    public List<Taxon> findAll() {
-        return (List<Taxon>) repository.findAll();
-    }
+  @Override
+  public List<Taxon> findAll() {
+    return (List<Taxon>) repository.findAll();
+  }
 
-    @Override
-    public Page<Taxon> findAll(Pageable pageable) {
-        return (Page<Taxon>) repository.findAll(pageable);
-    }
+  @Override
+  public Page<Taxon> findAll(Pageable pageable) {
+    return (Page<Taxon>) repository.findAll(pageable);
+  }
 
 
-    @Override
-    public Taxon save(Taxon t) {
-        t.composeFullName();
-        return repository.save(t);
-    }
+  @Override
+  public Taxon save(Taxon t) {
+    t.composeFullName();
+    return repository.save(t);
+  }
 
-    @Override
-    public void delete(Taxon t) {
-        repository.delete(t);
+  @Override
+  public void delete(Taxon t) {
+    repository.delete(t);
 
-    }
+  }
 
-    @Override
-    public Optional<Taxon> findById(Integer id) {
-        return repository.findById(id);
-    }
+  @Override
+  public Optional<Taxon> findById(Integer id) {
+    return repository.findById(id);
+  }
 
-    @Override
-    public Page<Taxon> findByFullNameContaining(String fullname, Pageable pageable) {
-        return repository.findByFullNameContaining(fullname, pageable);
-    }
+  @Override
+  public Page<Taxon> findByFullNameContaining(String fullname, Pageable pageable) {
+    return repository.findByFullNameContaining(fullname, pageable);
+  }
 
-    @Override
-    public Long count() {
-        return repository.count();
-    }
+  @Override
+  public Long count() {
+    return repository.count();
+  }
 }

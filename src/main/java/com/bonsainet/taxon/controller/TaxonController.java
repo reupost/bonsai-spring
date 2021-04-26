@@ -14,9 +14,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
 
@@ -24,89 +27,92 @@ import static java.lang.Thread.sleep;
 @CrossOrigin(origins = "http://localhost:4200")
 public class TaxonController {
 
-    @Autowired
-    private ITaxonService taxonService;
+  @Autowired
+  private ITaxonService taxonService;
 
-    @GetMapping("/taxa")
-    public List<Taxon> findTaxa() {
-        List<Taxon> taxa = taxonService.findAll();
-        return taxa;
+  @GetMapping("/taxa")
+  public List<Taxon> findTaxa() {
+    List<Taxon> taxa = taxonService.findAll();
+    return taxa;
+  }
+
+  /**
+   * Get a page of taxa.
+   *
+   * @param filter filter for full name contains
+   * @param sort   sort field list
+   * @param dir    sort direction list (paired with sort fields)
+   * @param page   page (0-indexed)
+   * @param size   page size
+   * @return
+   */
+  @GetMapping("/taxa_page")
+  public Page<Taxon> findTaxaForPage(
+      @RequestParam(required = false) String filter,
+      @RequestParam(required = false) List<String> sort,
+      @RequestParam(required = false) List<String> dir,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size
+  ) {
+    // sanitise
+    Field[] allFields = BonsaiDTO.class.getDeclaredFields();
+    ArrayList<Sort.Order> sortBy = new ArrayList<>();
+    for (int i = 0; i < sort.size(); i++) {
+      String sortItem = sort.get(i);
+      Sort.Direction sortDir = Sort.Direction.ASC;
+      if (dir.size() > i) {
+          if (dir.get(i).equalsIgnoreCase("DESC")) {
+              sortDir = Sort.Direction.DESC;
+          }
+      }
+      List<Field> f = Arrays.stream(allFields).filter(field ->
+          field.getName().equalsIgnoreCase(sortItem)).collect(Collectors.toList());
+      if (!f.isEmpty()) {
+        sortBy.add(new Sort.Order(sortDir, f.get(0).getName()));
+      }
     }
+    sortBy.add(new Sort.Order(Sort.Direction.ASC, "fullName"));
 
-    /**
-     * Get a page of taxa.
-     *
-     * @param filter    filter for full name contains
-     * @param sort      sort field list
-     * @param dir       sort direction list (paired with sort fields)
-     * @param page      page (0-indexed)
-     * @param size      page size
-     * @return
-     */
-    @GetMapping("/taxa_page")
-    public Page<Taxon> findTaxaForPage(
-            @RequestParam(required = false) String filter,
-            @RequestParam(required = false) List<String> sort,
-            @RequestParam(required = false) List<String> dir,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        // sanitise
-        ArrayList<Sort.Order> sortBy = new ArrayList<>();
-        for (int i = 0; i < sort.size(); i++) {
-            String sortItem = sort.get(i);
-            Sort.Direction sortDir = Sort.Direction.ASC;
-            if (dir.size() > i) {
-                if (dir.get(i).equalsIgnoreCase("DESC")) sortDir = Sort.Direction.DESC;
-            }
-            if (sortItem.equalsIgnoreCase("family")) {
-                sortBy.add(new Sort.Order(sortDir,"family"));
-            } else if (sortItem.equalsIgnoreCase("genus")) {
-                sortBy.add(new Sort.Order(sortDir,"genus"));
-            } else if (sortItem.equalsIgnoreCase("commonName")) {
-                sortBy.add(new Sort.Order(sortDir,"commonName"));
-            } else if (sortItem.equalsIgnoreCase("generalType")) {
-                sortBy.add(new Sort.Order(sortDir,"generalType"));
-            } else if (sortItem.equalsIgnoreCase("countBonsais")) {
-                sortBy.add(new Sort.Order(sortDir,"countBonsais"));
-            }
-        }
-        sortBy.add(new Sort.Order(Sort.Direction.ASC,"fullName"));
+    Sort sortFinal = Sort.by(sortBy);
+      if (size < 1) {
+          size = 1;
+      }
+      if (size > 100) {
+          size = 100;
+      }
+      if (page < 0) {
+          page = 0;
+      }
+    Pageable paging = PageRequest.of(page, size, sortFinal);
 
-        Sort sortFinal = Sort.by(sortBy);
-        if (size < 1) size = 1;
-        if (size > 100) size = 100;
-        if (page < 0) page = 0;
-        Pageable paging = PageRequest.of(page, size, sortFinal);
-
-        Page<Taxon> taxaResults;
-        if (filter == null) {
-            taxaResults = taxonService.findAll(paging);
-        } else {
-            taxaResults = taxonService.findByFullNameContaining(filter, paging);
-        }
-        return taxaResults;
+    Page<Taxon> taxaResults;
+    if (filter == null) {
+      taxaResults = taxonService.findAll(paging);
+    } else {
+      taxaResults = taxonService.findByFullNameContaining(filter, paging);
     }
+    return taxaResults;
+  }
 
-    @GetMapping("/taxa/count")
-    public Long countTaxa() {
-        return taxonService.count();
-    }
+  @GetMapping("/taxa/count")
+  public Long countTaxa() {
+    return taxonService.count();
+  }
 
-    @PutMapping(path="/taxon")
-    public Taxon setTaxon(@Valid @RequestBody Taxon t) throws InterruptedException {
-        sleep(1000);
-        return taxonService.save(t);
-    }
+  @PutMapping(path = "/taxon")
+  public Taxon setTaxon(@Valid @RequestBody Taxon t) throws InterruptedException {
+    sleep(1000);
+    return taxonService.save(t);
+  }
 
-    @DeleteMapping(path="/taxon/del/{id}")
-    public ResponseEntity<Long> deleteTaxon(@PathVariable Integer id) {
-        Optional<Taxon> t = taxonService.findById(id);
-        if (t.isPresent()) {
-            taxonService.delete(t.get());
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+  @DeleteMapping(path = "/taxon/del/{id}")
+  public ResponseEntity<Long> deleteTaxon(@PathVariable Integer id) {
+    Optional<Taxon> t = taxonService.findById(id);
+    if (t.isPresent()) {
+      taxonService.delete(t.get());
+      return new ResponseEntity<>(HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+  }
 }

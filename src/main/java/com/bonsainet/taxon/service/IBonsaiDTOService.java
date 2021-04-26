@@ -10,15 +10,15 @@ import java.util.Optional;
 
 public interface IBonsaiDTOService {
 
-    List<BonsaiDTO> findAll();
+  List<BonsaiDTO> findAll();
 
-    Page<BonsaiDTO> findAll(Pageable pageable);
+  Page<BonsaiDTO> findAll(Pageable pageable);
 
-    Optional<BonsaiDTO> findById(Integer bonsaiId);
+  Optional<BonsaiDTO> findById(Integer bonsaiId);
 
-    Page<BonsaiDTO> findByNameContaining(String name, Pageable pageable);
+  Page<BonsaiDTO> findByNameContaining(String name, Pageable pageable);
 
-    Long count();
+  Long count();
 
-    BonsaiDTO convertToBonsaiDTO(Bonsai bonsai);
+  BonsaiDTO convertToBonsaiDTO(Bonsai bonsai);
 }

@@ -9,17 +9,17 @@ import java.util.Optional;
 
 public interface ITaxonService {
 
-    List<Taxon> findAll();
+  List<Taxon> findAll();
 
-    Page<Taxon> findAll(Pageable pageable);
+  Page<Taxon> findAll(Pageable pageable);
 
-    Taxon save(Taxon t);
+  Taxon save(Taxon t);
 
-    void delete(Taxon t);
+  void delete(Taxon t);
 
-    Optional<Taxon> findById(Integer id);
+  Optional<Taxon> findById(Integer id);
 
-    Page<Taxon> findByFullNameContaining(String fullname, Pageable pageable);
+  Page<Taxon> findByFullNameContaining(String fullname, Pageable pageable);
 
-    Long count();
+  Long count();
 }
