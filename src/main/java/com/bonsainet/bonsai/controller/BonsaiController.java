@@ -1,9 +1,9 @@
-package com.bonsainet.taxon.controller;
+package com.bonsainet.bonsai.controller;
 
-import com.bonsainet.taxon.model.BonsaiDTO;
-import com.bonsainet.taxon.model.Taxon;
+import com.bonsainet.bonsai.model.Bonsai;
+import com.bonsainet.bonsai.model.BonsaiDTO;
+import com.bonsainet.bonsai.service.IBonsaiService;
 
-import com.bonsainet.taxon.service.ITaxonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,44 +25,36 @@ import static java.lang.Thread.sleep;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-public class TaxonController {
+@RequestMapping("bonsai")
+public class BonsaiController {
 
   @Autowired
-  private ITaxonService taxonService;
+  private IBonsaiService bonsaiService;
 
-  @GetMapping("/taxa")
-  public List<Taxon> findTaxa() {
-    return taxonService.findAll();
+  @GetMapping("/bonsais")
+  public List<Bonsai> findBonsais() {
+    return bonsaiService.findAll();
   }
 
-  /**
-   * Get a page of taxa.
-   *
-   * @param filter filter for full name contains
-   * @param sort   sort field list
-   * @param dir    sort direction list (paired with sort fields)
-   * @param page   page (0-indexed)
-   * @param size   page size
-   * @return
-   */
-  @GetMapping("/taxa_page")
-  public Page<Taxon> findTaxaForPage(
+
+  @GetMapping("/bonsais_page")
+  public Page<Bonsai> findBonsaisForPage(
       @RequestParam(required = false) String filter,
       @RequestParam(required = false) List<String> sort,
       @RequestParam(required = false) List<String> dir,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size
   ) {
-    // sanitise
+    // TODO this is ok, but sorting by non-indexed fields could become a problem
     Field[] allFields = BonsaiDTO.class.getDeclaredFields();
     ArrayList<Sort.Order> sortBy = new ArrayList<>();
     for (int i = 0; i < sort.size(); i++) {
       String sortItem = sort.get(i);
       Sort.Direction sortDir = Sort.Direction.ASC;
       if (dir.size() > i) {
-          if (dir.get(i).equalsIgnoreCase("DESC")) {
-              sortDir = Sort.Direction.DESC;
-          }
+        if (dir.get(i).equalsIgnoreCase("DESC")) {
+          sortDir = Sort.Direction.DESC;
+        }
       }
       List<Field> f = Arrays.stream(allFields).filter(field ->
           field.getName().equalsIgnoreCase(sortItem)).collect(Collectors.toList());
@@ -70,45 +62,45 @@ public class TaxonController {
         sortBy.add(new Sort.Order(sortDir, f.get(0).getName()));
       }
     }
-    sortBy.add(new Sort.Order(Sort.Direction.ASC, "fullName"));
+    sortBy.add(new Sort.Order(Sort.Direction.ASC, "tag"));
 
     Sort sortFinal = Sort.by(sortBy);
-      if (size < 1) {
-          size = 1;
-      }
-      if (size > 100) {
-          size = 100;
-      }
-      if (page < 0) {
-          page = 0;
-      }
+    if (size < 1) {
+      size = 1;
+    }
+    if (size > 100) {
+      size = 100;
+    }
+    if (page < 0) {
+      page = 0;
+    }
     Pageable paging = PageRequest.of(page, size, sortFinal);
 
-    Page<Taxon> taxaResults;
+    Page<Bonsai> bonsaiResults;
     if (filter == null) {
-      taxaResults = taxonService.findAll(paging);
+      bonsaiResults = bonsaiService.findAll(paging);
     } else {
-      taxaResults = taxonService.findByFullNameContaining(filter, paging);
+      bonsaiResults = bonsaiService.findByNameContaining(filter, paging);
     }
-    return taxaResults;
+    return bonsaiResults;
   }
 
-  @GetMapping("/taxa/count")
-  public Long countTaxa() {
-    return taxonService.count();
+  @GetMapping("/bonsais/count")
+  public Long countBonsais() {
+    return bonsaiService.count();
   }
 
-  @PutMapping(path = "/taxon")
-  public Taxon setTaxon(@Valid @RequestBody Taxon t) throws InterruptedException {
-    sleep(1000);
-    return taxonService.save(t);
+  @PutMapping(path = "/bonsai")
+  public Bonsai setBonsai(@Valid @RequestBody Bonsai t) throws InterruptedException {
+    // sleep(1000);
+    return bonsaiService.save(t);
   }
 
-  @DeleteMapping(path = "/taxon/del/{id}")
-  public ResponseEntity<Long> deleteTaxon(@PathVariable Integer id) {
-    Optional<Taxon> t = taxonService.findById(id);
+  @DeleteMapping(path = "/bonsais/del/{id}")
+  public ResponseEntity<Long> deleteBonsai(@PathVariable Integer id) {
+    Optional<Bonsai> t = bonsaiService.findById(id);
     if (t.isPresent()) {
-      taxonService.delete(t.get());
+      bonsaiService.delete(t.get());
       return new ResponseEntity<>(HttpStatus.OK);
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);

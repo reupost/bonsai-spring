@@ -1,6 +1,6 @@
-package com.bonsainet.taxon.repository;
+package com.bonsainet.bonsai.repository;
 
-import com.bonsainet.taxon.model.Bonsai;
+import com.bonsainet.bonsai.model.Bonsai;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;

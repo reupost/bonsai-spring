@@ -1,7 +1,8 @@
-package com.bonsainet.taxon.service;
+package com.bonsainet.bonsai.service;
 
-import com.bonsainet.taxon.model.Taxon;
-import com.bonsainet.taxon.repository.TaxonRepository;
+import com.bonsainet.bonsai.model.Taxon;
+import com.bonsainet.bonsai.repository.TaxonRepository;
+import com.bonsainet.bonsai.service.ITaxonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

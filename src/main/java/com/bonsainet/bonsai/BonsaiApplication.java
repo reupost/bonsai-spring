@@ -1,14 +1,14 @@
-package com.bonsainet.taxon;
+package com.bonsainet.bonsai;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class SpeciesApplication {
+public class BonsaiApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(SpeciesApplication.class, args);
+    SpringApplication.run(BonsaiApplication.class, args);
   }
 
 }

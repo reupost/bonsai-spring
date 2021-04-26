@@ -1,4 +1,4 @@
-package com.bonsainet.taxon.model;
+package com.bonsainet.bonsai.model;
 
 import java.util.Objects;
 
@@ -53,21 +53,5 @@ public class Taxon {
             .toString(this.cultivar, "") + "'" : "");
     return true;
   }
-
-  /* @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("Taxon{");
-    sb.append("id=").append(id);
-    sb.append(",family='").append(family).append('\'');
-    sb.append(", genus='").append(genus).append('\'');
-    sb.append(", species='").append(species).append('\'');
-    sb.append(", cultivar='").append(cultivar).append('\'');
-    sb.append(", commonName='").append(commonName).append('\'');
-    sb.append(", fullName='").append(fullName).append('\'');
-    sb.append(", generalType='").append(generalType).append('\'');
-    sb.append(", countBonsais=").append(countBonsais);
-    sb.append('}');
-    return sb.toString();
-  } */
 
 }

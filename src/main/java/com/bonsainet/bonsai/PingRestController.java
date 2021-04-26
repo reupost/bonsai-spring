@@ -1,4 +1,4 @@
-package com.bonsainet.taxon;
+package com.bonsainet.bonsai;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,7 +1,7 @@
-package com.bonsainet.taxon.controller;
+package com.bonsainet.bonsai.controller;
 
-import com.bonsainet.taxon.model.BonsaiDTO;
-import com.bonsainet.taxon.service.IBonsaiDTOService;
+import com.bonsainet.bonsai.model.BonsaiDTO;
+import com.bonsainet.bonsai.service.IBonsaiDTOService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping("bonsai")
 public class BonsaiDTOController {
 
   @Autowired

@@ -1,5 +1,4 @@
-package com.bonsainet.taxon.model;
-
+package com.bonsainet.bonsai.model;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -46,7 +45,6 @@ public class Bonsai {
 
   public Bonsai(Integer id, Integer taxonId, Integer tag) {
     this.id = id;
-    //this.taxonId = taxonId;
     this.tag = tag;
   }
 
