@@ -28,8 +28,12 @@ import static java.lang.Thread.sleep;
 @RequestMapping("bonsai")
 public class BonsaiController {
 
-  @Autowired
+  // @Autowired
   private IBonsaiService bonsaiService;
+
+  public BonsaiController(IBonsaiService bonsaiService) {
+    this.bonsaiService = bonsaiService;
+  }
 
   @GetMapping("/bonsais")
   public List<Bonsai> findBonsais() {
@@ -48,18 +52,22 @@ public class BonsaiController {
     // TODO this is ok, but sorting by non-indexed fields could become a problem
     Field[] allFields = BonsaiDTO.class.getDeclaredFields();
     ArrayList<Sort.Order> sortBy = new ArrayList<>();
-    for (int i = 0; i < sort.size(); i++) {
-      String sortItem = sort.get(i);
-      Sort.Direction sortDir = Sort.Direction.ASC;
-      if (dir.size() > i) {
-        if (dir.get(i).equalsIgnoreCase("DESC")) {
-          sortDir = Sort.Direction.DESC;
+    if (sort != null) {
+      for (int i = 0; i < sort.size(); i++) {
+        String sortItem = sort.get(i);
+        Sort.Direction sortDir = Sort.Direction.ASC;
+        if (dir != null) {
+          if (dir.size() > i) {
+            if (dir.get(i).equalsIgnoreCase("DESC")) {
+              sortDir = Sort.Direction.DESC;
+            }
+          }
         }
-      }
-      List<Field> f = Arrays.stream(allFields).filter(field ->
-          field.getName().equalsIgnoreCase(sortItem)).collect(Collectors.toList());
-      if (!f.isEmpty()) {
-        sortBy.add(new Sort.Order(sortDir, f.get(0).getName()));
+        List<Field> f = Arrays.stream(allFields).filter(field ->
+            field.getName().equalsIgnoreCase(sortItem)).collect(Collectors.toList());
+        if (!f.isEmpty()) {
+          sortBy.add(new Sort.Order(sortDir, f.get(0).getName()));
+        }
       }
     }
     sortBy.add(new Sort.Order(Sort.Direction.ASC, "tag"));
