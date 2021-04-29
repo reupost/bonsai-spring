@@ -27,7 +27,7 @@ public class Taxon {
   private Integer countBonsais;
   private String fullName;
 
-  private Taxon() {
+  public Taxon() {
   }
 
   public Taxon(Integer id, String family, String genus, String species, String cultivar,
@@ -46,11 +46,11 @@ public class Taxon {
   }
 
   public boolean composeFullName() {
-    this.fullName = Objects.toString(this.genus, "") +
-        (!Objects.toString(this.species, "").equals("") ? " " + Objects.toString(this.species, "")
-            : "") +
-        (!Objects.toString(this.cultivar, "").equals("") ? " '" + Objects
-            .toString(this.cultivar, "") + "'" : "");
+    String genusNotNull = Objects.toString(this.genus, "").trim();
+    String speciesNotNull = Objects.toString(this.species, "sp.").trim();
+    String cultivarNotNull = Objects.toString(this.cultivar, "").trim();
+    this.fullName = (genusNotNull + " " + speciesNotNull +
+        (!cultivarNotNull.equals("") ? " '" + cultivarNotNull + "'" : "")).trim();
     return true;
   }
 

@@ -1,7 +1,6 @@
 package com.bonsainet.taxon.controller;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -17,8 +16,6 @@ import com.bonsainet.bonsai.controller.BonsaiController;
 import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.service.BonsaiService;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

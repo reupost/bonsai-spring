@@ -30,10 +30,4 @@ public class BonsaiDTO {
   public BonsaiDTO() {
   }
 
-  public BonsaiDTO(Integer bonsaiId, Integer tag) {
-    this.id = bonsaiId;
-    this.tag = tag;
-  }
-
-
 }

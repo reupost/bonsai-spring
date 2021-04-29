@@ -4,7 +4,6 @@ import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.Taxon;
 
 import com.bonsainet.bonsai.service.ITaxonService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
@@ -28,8 +27,11 @@ import static java.lang.Thread.sleep;
 @RequestMapping("taxon")
 public class TaxonController {
 
-  @Autowired
   private ITaxonService taxonService;
+
+  public TaxonController(ITaxonService taxonService) {
+    this.taxonService = taxonService;
+  }
 
   @GetMapping("/taxa")
   public List<Taxon> findTaxa() {
@@ -57,32 +59,36 @@ public class TaxonController {
     // sanitise
     Field[] allFields = BonsaiDTO.class.getDeclaredFields();
     ArrayList<Sort.Order> sortBy = new ArrayList<>();
-    for (int i = 0; i < sort.size(); i++) {
-      String sortItem = sort.get(i);
-      Sort.Direction sortDir = Sort.Direction.ASC;
-      if (dir.size() > i) {
-          if (dir.get(i).equalsIgnoreCase("DESC")) {
+    if (sort != null) {
+      for (int i = 0; i < sort.size(); i++) {
+        String sortItem = sort.get(i);
+        Sort.Direction sortDir = Sort.Direction.ASC;
+        if (dir != null) {
+          if (dir.size() > i) {
+            if (dir.get(i).equalsIgnoreCase("DESC")) {
               sortDir = Sort.Direction.DESC;
+            }
           }
-      }
-      List<Field> f = Arrays.stream(allFields).filter(field ->
-          field.getName().equalsIgnoreCase(sortItem)).collect(Collectors.toList());
-      if (!f.isEmpty()) {
-        sortBy.add(new Sort.Order(sortDir, f.get(0).getName()));
+        }
+        List<Field> f = Arrays.stream(allFields).filter(field ->
+            field.getName().equalsIgnoreCase(sortItem)).collect(Collectors.toList());
+        if (!f.isEmpty()) {
+          sortBy.add(new Sort.Order(sortDir, f.get(0).getName()));
+        }
       }
     }
     sortBy.add(new Sort.Order(Sort.Direction.ASC, "fullName"));
 
     Sort sortFinal = Sort.by(sortBy);
-      if (size < 1) {
-          size = 1;
-      }
-      if (size > 100) {
-          size = 100;
-      }
-      if (page < 0) {
-          page = 0;
-      }
+    if (size < 1) {
+      size = 1;
+    }
+    if (size > 100) {
+      size = 100;
+    }
+    if (page < 0) {
+      page = 0;
+    }
     Pageable paging = PageRequest.of(page, size, sortFinal);
 
     Page<Taxon> taxaResults;

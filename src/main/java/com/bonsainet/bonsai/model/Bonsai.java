@@ -43,11 +43,6 @@ public class Bonsai {
   public Bonsai() {
   }
 
-  public Bonsai(Integer id, Integer taxonId, Integer tag) {
-    this.id = id;
-    this.tag = tag;
-  }
-
   public Taxon getTaxon() {
     return taxon;
   }
