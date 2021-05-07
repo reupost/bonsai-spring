@@ -2,6 +2,7 @@ package com.bonsainet.bonsai.controller;
 
 import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.service.IBonsaiDTOService;
+import com.bonsainet.bonsai.service.IBonsaiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +21,12 @@ import java.util.stream.Collectors;
 @RequestMapping("bonsai")
 public class BonsaiDTOController {
 
-  @Autowired
+  //@Autowired
   private IBonsaiDTOService bonsaiDTOService;
+
+  public BonsaiDTOController(IBonsaiDTOService bonsaiDtoService) {
+    this.bonsaiDTOService = bonsaiDtoService;
+  }
 
   @GetMapping("/bonsaisdto")
   public List<BonsaiDTO> findBonsaisDTODetails() {
@@ -50,18 +55,22 @@ public class BonsaiDTOController {
     // sanitise parameters
     Field[] allFields = BonsaiDTO.class.getDeclaredFields();
     ArrayList<Sort.Order> sortBy = new ArrayList<>();
-    for (int i = 0; i < sort.size(); i++) {
-      String sortItem = sort.get(i);
-      Sort.Direction sortDir = Sort.Direction.ASC;
-      if (dir.size() > i) {
-        if (dir.get(i).equalsIgnoreCase("DESC")) {
-          sortDir = Sort.Direction.DESC;
+    if (sort != null) {
+      for (int i = 0; i < sort.size(); i++) {
+        String sortItem = sort.get(i);
+        Sort.Direction sortDir = Sort.Direction.ASC;
+        if (dir != null) {
+          if (dir.size() > i) {
+            if (dir.get(i).equalsIgnoreCase("DESC")) {
+              sortDir = Sort.Direction.DESC;
+            }
+          }
         }
-      }
-      List<Field> f = Arrays.stream(allFields).filter(field ->
-          field.getName().equalsIgnoreCase(sortItem)).collect(Collectors.toList());
-      if (!f.isEmpty()) {
-        sortBy.add(new Sort.Order(sortDir, f.get(0).getName()));
+        List<Field> f = Arrays.stream(allFields).filter(field ->
+            field.getName().equalsIgnoreCase(sortItem)).collect(Collectors.toList());
+        if (!f.isEmpty()) {
+          sortBy.add(new Sort.Order(sortDir, f.get(0).getName()));
+        }
       }
     }
     sortBy.add(new Sort.Order(Sort.Direction.ASC, "tag"));

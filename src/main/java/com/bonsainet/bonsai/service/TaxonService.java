@@ -2,8 +2,7 @@ package com.bonsainet.bonsai.service;
 
 import com.bonsainet.bonsai.model.Taxon;
 import com.bonsainet.bonsai.repository.TaxonRepository;
-import com.bonsainet.bonsai.service.ITaxonService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,8 +13,15 @@ import java.util.Optional;
 @Service
 public class TaxonService implements ITaxonService {
 
-  @Autowired
+  private final ApplicationContext context;
+
+  // @Autowired
   private TaxonRepository repository;
+
+  public TaxonService(ApplicationContext context, TaxonRepository repository) {
+    this.context = context;
+    this.repository = repository;
+  }
 
   @Override
   public List<Taxon> findAll() {
@@ -30,14 +36,17 @@ public class TaxonService implements ITaxonService {
 
   @Override
   public Taxon save(Taxon t) {
-    t.composeFullName();
-    return repository.save(t);
+    try {
+      t.composeFullName();
+      return repository.save(t);
+    } catch (NullPointerException npe) {
+      throw new IllegalArgumentException("invalid taxon");
+    }
   }
 
   @Override
   public void delete(Taxon t) {
     repository.delete(t);
-
   }
 
   @Override
@@ -54,4 +63,6 @@ public class TaxonService implements ITaxonService {
   public Long count() {
     return repository.count();
   }
+
+
 }
