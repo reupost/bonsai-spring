@@ -2,9 +2,6 @@ package com.bonsainet.bonsai.service;
 
 import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.repository.BonsaiRepository;
-import com.bonsainet.bonsai.repository.TaxonRepository;
-import com.bonsainet.bonsai.service.IBonsaiService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

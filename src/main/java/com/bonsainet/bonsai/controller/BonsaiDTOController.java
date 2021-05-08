@@ -2,8 +2,6 @@ package com.bonsainet.bonsai.controller;
 
 import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.service.IBonsaiDTOService;
-import com.bonsainet.bonsai.service.IBonsaiService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
