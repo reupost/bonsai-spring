@@ -3,22 +3,16 @@ package com.bonsainet.taxon.service;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.Taxon;
 import com.bonsainet.bonsai.repository.TaxonRepository;
 import com.bonsainet.bonsai.service.TaxonService;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -36,11 +30,10 @@ class TaxonServiceTest {
     applicationContext = mock(ApplicationContext.class);
     taxonRepository = mock(TaxonRepository.class);
     taxonService = new TaxonService(applicationContext, taxonRepository);
-
   }
 
   @Test
-  void shouldThrowExceptionWhenTaxonIsNull() {
+  void shouldThrowExceptionWhenSaveTaxonIsNull() {
     assertThrows(IllegalArgumentException.class, () -> taxonService.save(null));
   }
 
@@ -52,6 +45,7 @@ class TaxonServiceTest {
     taxonService.save(taxon);
 
     verify(taxonRepository).save(taxon);
+    verifyNoMoreInteractions(taxonRepository);
   }
 
   @Test
@@ -59,6 +53,7 @@ class TaxonServiceTest {
     taxonService.findAll();
 
     verify(taxonRepository).findAll();
+    verifyNoMoreInteractions(taxonRepository);
   }
 
   @Test
@@ -72,6 +67,7 @@ class TaxonServiceTest {
     taxonService.findAll(paging);
 
     verify(taxonRepository).findAll(paging);
+    verifyNoMoreInteractions(taxonRepository);
   }
 
   @Test
@@ -82,18 +78,23 @@ class TaxonServiceTest {
     taxonService.delete(taxon);
 
     verify(taxonRepository).delete(taxon);
+    verifyNoMoreInteractions(taxonRepository);
   }
 
   @Test
   void shouldFindByIdTaxon() {
     taxonService.findById(1);
+
     verify(taxonRepository).findById(1);
+    verifyNoMoreInteractions(taxonRepository);
   }
 
   @Test
   void shouldCountTaxon() {
     taxonService.count();
+
     verify(taxonRepository).count();
+    verifyNoMoreInteractions(taxonRepository);
   }
 
   @Test
@@ -107,7 +108,6 @@ class TaxonServiceTest {
     taxonService.findByFullNameContaining("test", paging);
 
     verify(taxonRepository).findByFullNameContaining("test", paging);
+    verifyNoMoreInteractions(taxonRepository);
   }
-
-
 }

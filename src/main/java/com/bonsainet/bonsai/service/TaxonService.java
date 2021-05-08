@@ -16,7 +16,7 @@ public class TaxonService implements ITaxonService {
   private final ApplicationContext context;
 
   // @Autowired
-  private TaxonRepository repository;
+  private final TaxonRepository repository;
 
   public TaxonService(ApplicationContext context, TaxonRepository repository) {
     this.context = context;
@@ -35,7 +35,7 @@ public class TaxonService implements ITaxonService {
 
 
   @Override
-  public Taxon save(Taxon t) {
+  public Taxon save(Taxon t) throws IllegalArgumentException {
     try {
       t.composeFullName();
       return repository.save(t);
