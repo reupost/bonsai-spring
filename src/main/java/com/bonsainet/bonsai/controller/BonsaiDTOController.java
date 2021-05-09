@@ -1,6 +1,7 @@
 package com.bonsainet.bonsai.controller;
 
 import com.bonsainet.bonsai.model.BonsaiDTO;
+import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.service.IBonsaiDTOService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,10 +53,12 @@ public class BonsaiDTOController {
   ) {
     // sanitise parameters
     Field[] allFields = BonsaiDTO.class.getDeclaredFields();
+    Field[] taxonFields = TaxonDTO.class.getDeclaredFields();
     ArrayList<Sort.Order> sortBy = new ArrayList<>();
     if (sort != null) {
       for (int i = 0; i < sort.size(); i++) {
         String sortItem = sort.get(i);
+        String[] sortItemSplit = sortItem.split("\\.");
         Sort.Direction sortDir = Sort.Direction.ASC;
         if (dir != null) {
           if (dir.size() > i) {
@@ -68,6 +71,15 @@ public class BonsaiDTOController {
             field.getName().equalsIgnoreCase(sortItem)).collect(Collectors.toList());
         if (!f.isEmpty()) {
           sortBy.add(new Sort.Order(sortDir, f.get(0).getName()));
+        } else {
+          //is it a taxon field?
+          if (sortItemSplit[0].equalsIgnoreCase("taxonDTO") && sortItemSplit.length == 2) {
+            List<Field> ftaxon = Arrays.stream(taxonFields).filter(field ->
+                field.getName().equalsIgnoreCase(sortItemSplit[1])).collect(Collectors.toList());
+            if (!ftaxon.isEmpty()) {
+              sortBy.add(new Sort.Order(sortDir, "taxon." + ftaxon.get(0).getName()));
+            }
+          }
         }
       }
     }
