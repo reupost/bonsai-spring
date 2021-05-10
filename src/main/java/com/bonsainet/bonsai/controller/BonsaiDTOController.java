@@ -3,6 +3,7 @@ package com.bonsainet.bonsai.controller;
 import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.service.IBonsaiDTOService;
+import java.util.stream.Stream;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
@@ -52,13 +53,23 @@ public class BonsaiDTOController {
       @RequestParam(defaultValue = "10") int size
   ) {
     // sanitise parameters
-    Field[] allFields = BonsaiDTO.class.getDeclaredFields();
-    Field[] taxonFields = TaxonDTO.class.getDeclaredFields();
+    String[] taxonFieldNames = Stream.of(TaxonDTO.class.getDeclaredFields())
+        .map(f -> "taxon." + f.getName())
+        .toArray(String[]::new);
+
+    String[] bonsaiFieldNames = Stream.of(BonsaiDTO.class.getDeclaredFields())
+        .map(Field::getName)
+        .filter(fieldName -> !fieldName.equalsIgnoreCase("taxonDTO"))
+        .toArray(String[]::new);
+
+    String[] allFieldNames = Stream.of(bonsaiFieldNames, taxonFieldNames)
+        .flatMap(Stream::of)
+        .toArray(String[]::new);
+
     ArrayList<Sort.Order> sortBy = new ArrayList<>();
     if (sort != null) {
       for (int i = 0; i < sort.size(); i++) {
         String sortItem = sort.get(i);
-        String[] sortItemSplit = sortItem.split("\\.");
         Sort.Direction sortDir = Sort.Direction.ASC;
         if (dir != null) {
           if (dir.size() > i) {
@@ -67,19 +78,11 @@ public class BonsaiDTOController {
             }
           }
         }
-        List<Field> f = Arrays.stream(allFields).filter(field ->
-            field.getName().equalsIgnoreCase(sortItem)).collect(Collectors.toList());
+        List<String> f = Arrays.stream(allFieldNames)
+            .filter(fieldName -> fieldName.equalsIgnoreCase(sortItem))
+            .collect(Collectors.toList());
         if (!f.isEmpty()) {
-          sortBy.add(new Sort.Order(sortDir, f.get(0).getName()));
-        } else {
-          //is it a taxon field?
-          if (sortItemSplit[0].equalsIgnoreCase("taxonDTO") && sortItemSplit.length == 2) {
-            List<Field> ftaxon = Arrays.stream(taxonFields).filter(field ->
-                field.getName().equalsIgnoreCase(sortItemSplit[1])).collect(Collectors.toList());
-            if (!ftaxon.isEmpty()) {
-              sortBy.add(new Sort.Order(sortDir, "taxon." + ftaxon.get(0).getName()));
-            }
-          }
+          sortBy.add(new Sort.Order(sortDir, f.get(0)));
         }
       }
     }

@@ -8,6 +8,6 @@ import org.mapstruct.Mapping;
 @Mapper
 public interface IBonsaiMapper {
 
-  @Mapping(target="taxonDTO", source = "taxon")
+  @Mapping(target="taxon", source = "taxon")
   BonsaiDTO bonsaiToBonsaiDTO(Bonsai bonsai);
 }

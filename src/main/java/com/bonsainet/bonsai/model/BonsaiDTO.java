@@ -25,7 +25,7 @@ public class BonsaiDTO {
   private Boolean isNoHoper;
   private String notes;
 
-  private TaxonDTO taxonDTO;
+  private TaxonDTO taxon;
 
   public BonsaiDTO() {
   }

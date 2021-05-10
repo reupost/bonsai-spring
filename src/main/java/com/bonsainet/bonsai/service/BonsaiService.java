@@ -15,7 +15,6 @@ public class BonsaiService implements IBonsaiService {
 
   private final ApplicationContext context;
 
-  // @Autowired
   private final BonsaiRepository repository;
 
   public BonsaiService(ApplicationContext context, BonsaiRepository repository) {

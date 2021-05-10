@@ -17,7 +17,6 @@ public class BonsaiDTOService implements IBonsaiDTOService {
 
   private final ApplicationContext context;
 
-  // @Autowired
   private final BonsaiRepository repository;
 
   public BonsaiDTOService(ApplicationContext context, BonsaiRepository repository) {
