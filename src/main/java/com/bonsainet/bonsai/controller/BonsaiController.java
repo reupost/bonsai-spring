@@ -99,7 +99,7 @@ public class BonsaiController {
     Pageable paging = PageRequest.of(page, size, sortFinal);
 
     Page<Bonsai> bonsaiResults;
-    if (filter == null) {
+    if (filter == null || filter.length() == 0) {
       bonsaiResults = bonsaiService.findAll(paging);
     } else {
       bonsaiResults = bonsaiService.findByNameContaining(filter, paging);

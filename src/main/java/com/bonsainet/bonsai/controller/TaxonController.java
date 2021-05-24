@@ -1,8 +1,8 @@
 package com.bonsainet.bonsai.controller;
 
-import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.Taxon;
 
+import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.service.ITaxonService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,7 +57,7 @@ public class TaxonController {
       @RequestParam(defaultValue = "10") int size
   ) {
     // sanitise
-    Field[] allFields = BonsaiDTO.class.getDeclaredFields();
+    Field[] allFields = TaxonDTO.class.getDeclaredFields();
     ArrayList<Sort.Order> sortBy = new ArrayList<>();
     if (sort != null) {
       for (int i = 0; i < sort.size(); i++) {
