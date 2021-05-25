@@ -3,12 +3,15 @@ package com.bonsainet.bonsai.controller;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.service.IPicService;
 
+import java.io.IOException;
 import java.util.stream.Stream;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +29,9 @@ import static java.lang.Thread.sleep;
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("pic")
 public class PicController {
+
+  @Value("${pic.rootfolder}")
+  private String picRootFolder;
 
   // @Autowired
   private IPicService picService;
@@ -119,6 +125,20 @@ public class PicController {
   @GetMapping("/pics/count")
   public Long countPics() {
     return picService.count();
+  }
+
+  @GetMapping(
+      value = "/image",
+      produces = MediaType.IMAGE_JPEG_VALUE
+  )
+  public @ResponseBody byte[] getImage(@RequestParam(required = true) Integer id)
+      throws IOException {
+    Optional<Pic> p = picService.findById(id);
+    if (p.isPresent()) {
+      return p.get().getImage(picRootFolder);
+    } else {
+      return null;
+    }
   }
 
   @PutMapping(path = "/pic")
