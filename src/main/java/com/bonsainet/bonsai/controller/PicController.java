@@ -135,16 +135,31 @@ public class PicController {
       throws IOException {
     Optional<Pic> p = picService.findById(id);
     if (p.isPresent()) {
-      return p.get().getImage(picRootFolder);
+      return p.get().getImage();
+    } else {
+      return null;
+    }
+  }
+
+  @GetMapping(
+      value = "/update",
+      produces = MediaType.IMAGE_JPEG_VALUE
+  )
+  public @ResponseBody byte[] updateImage(@RequestParam(required = true) Integer id)
+      throws IOException {
+    Optional<Pic> p = picService.findById(id);
+    if (p.isPresent()) {
+      picService.save(p.get());
+      return p.get().getImage();
     } else {
       return null;
     }
   }
 
   @PutMapping(path = "/pic")
-  public Pic setPic(@Valid @RequestBody Pic t) throws InterruptedException {
+  public Pic setPic(@Valid @RequestBody Pic p) throws InterruptedException {
     // sleep(1000);
-    return picService.save(t);
+    return picService.save(p);
   }
 
   @DeleteMapping(path = "/pics/del/{id}")

@@ -2,6 +2,7 @@ package com.bonsainet.bonsai.service;
 
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.repository.PicRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,9 @@ import java.util.Optional;
 
 @Service
 public class PicService implements IPicService {
+
+  @Value("${pic.rootfolder}")
+  private String picRootFolder;
 
   private final ApplicationContext context;
 
@@ -29,18 +33,21 @@ public class PicService implements IPicService {
 
   @Override
   public Page<Pic> findAll(Pageable pageable) {
-    return (Page<Pic>) repository.findAll(pageable);
-  }
-
-
-  @Override
-  public Pic save(Pic b) {
-    return repository.save(b);
+    return repository.findAll(pageable);
   }
 
   @Override
-  public void delete(Pic t) {
-    repository.delete(t);
+  public Pic save(Pic p) {
+    p.setRootFolder(this.picRootFolder);
+    p.setDimensions();
+    p.setThumb();
+
+    return repository.save(p);
+  }
+
+  @Override
+  public void delete(Pic p) {
+    repository.delete(p);
   }
 
   @Override
