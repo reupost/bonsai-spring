@@ -141,6 +141,7 @@ public class PicController {
     }
   }
 
+  // this is a temporary endpoint
   @GetMapping(
       value = "/update",
       produces = MediaType.IMAGE_JPEG_VALUE
@@ -151,6 +152,20 @@ public class PicController {
     if (p.isPresent()) {
       picService.save(p.get());
       return p.get().getImage();
+    } else {
+      return null;
+    }
+  }
+
+  @GetMapping(
+      value = "/thumb",
+      produces = MediaType.IMAGE_JPEG_VALUE
+  )
+  public @ResponseBody byte[] getImageThumb(@RequestParam(required = true) Integer id)
+      throws IOException {
+    Optional<Pic> p = picService.findById(id);
+    if (p.isPresent()) {
+      return p.get().getImageThumb();
     } else {
       return null;
     }

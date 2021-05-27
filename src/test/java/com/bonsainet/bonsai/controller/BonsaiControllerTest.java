@@ -1,4 +1,4 @@
-package com.bonsainet.taxon.controller;
+package com.bonsainet.bonsai.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.bonsainet.bonsai.controller.BonsaiController;
 import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.service.BonsaiService;
 import java.util.ArrayList;

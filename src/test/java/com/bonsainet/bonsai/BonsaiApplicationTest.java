@@ -1,6 +1,5 @@
-package com.bonsainet.taxon;
+package com.bonsainet.bonsai;
 
-import com.bonsainet.bonsai.BonsaiApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

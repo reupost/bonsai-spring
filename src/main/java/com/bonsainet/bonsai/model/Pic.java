@@ -57,28 +57,46 @@ public class Pic {
   public Pic() {
   }
 
-  public void setDimensions() {
-    int height = 0;
-    int width = 0;
-
+  private BufferedImage getImageFromFile(File f) {
+    BufferedImage image = null;
     try {
-      File f = new File(this.rootFolder, this.fileName);
-      BufferedImage image = ImageIO.read(f);
-      height = image.getHeight();
-      width = image.getWidth();
+      image = ImageIO.read(f);
     } catch (IOException ioe) {
       ioe.printStackTrace();
     }
-    this.dimX = width;
-    this.dimY = height;
+    return image;
+  }
+
+  public void setDimensionsFromImage(BufferedImage image, boolean forThumb) {
+    if (forThumb) {
+      this.dimXThumb = 0;
+      this.dimYThumb = 0;
+    } else {
+      this.dimX = 0;
+      this.dimY = 0;
+    }
+    if (image != null) {
+      if (forThumb) {
+        this.dimXThumb = image.getWidth();
+        this.dimYThumb = image.getHeight();
+      } else {
+        this.dimX = image.getWidth();
+        this.dimY = image.getHeight();
+      }
+    }
+  }
+
+  public void setDimensions() {
+    File f = new File(this.rootFolder, this.fileName);
+    setDimensionsFromImage(this.getImageFromFile(f), false);
   }
 
   public void setThumb() {
     BufferedImage thumb;
     try {
       File f = new File(this.rootFolder, this.fileName);
+      BufferedImage image = getImageFromFile(f);
       Path pathThumb = Paths.get(this.rootFolder + File.separatorChar + this.THUMB_DIR);
-      BufferedImage image = ImageIO.read(f);
       thumb = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC, this.THUMB_DIM, this.THUMB_DIM, Scalr.OP_ANTIALIAS);
       this.fileNameThumb = this.fileName;
       if (Files.notExists(pathThumb)) {
@@ -86,8 +104,7 @@ public class Pic {
       }
       File fThumb = new File(pathThumb.toString(), this.fileNameThumb);
       ImageIO.write(thumb, "jpg", fThumb);
-      this.dimXThumb = thumb.getWidth();
-      this.dimYThumb = thumb.getHeight();
+      setDimensionsFromImage(thumb, true);
     } catch (IOException ioe) {
       ioe.printStackTrace();
     }

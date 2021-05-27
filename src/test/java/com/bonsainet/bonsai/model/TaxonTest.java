@@ -1,8 +1,7 @@
-package com.bonsainet.taxon.model;
+package com.bonsainet.bonsai.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.bonsainet.bonsai.model.Taxon;
 import org.junit.jupiter.api.Test;
 
 public class TaxonTest {

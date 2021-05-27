@@ -1,4 +1,4 @@
-package com.bonsainet.taxon.service;
+package com.bonsainet.bonsai.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.bonsainet.bonsai.model.Taxon;
 import com.bonsainet.bonsai.repository.TaxonRepository;
-import com.bonsainet.bonsai.service.TaxonService;
 
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
