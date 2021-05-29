@@ -25,9 +25,9 @@ import org.imgscalr.Scalr;
 @Data
 public class Pic {
   @Transient
-  static final Integer THUMB_DIM = 200;
+  public static final Integer THUMB_DIM = 200;
   @Transient
-  static final String THUMB_DIR = "thumbs";
+  public static final String THUMB_DIR = "thumbs";
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,7 +57,7 @@ public class Pic {
   public Pic() {
   }
 
-  private BufferedImage getImageFromFile(File f) {
+  public BufferedImage getImageFromFile(File f) {
     BufferedImage image = null;
     try {
       image = ImageIO.read(f);
@@ -96,19 +96,27 @@ public class Pic {
     try {
       File f = new File(this.rootFolder, this.fileName);
       BufferedImage image = getImageFromFile(f);
+      thumb = getThumbFromImage(image);
+
       Path pathThumb = Paths.get(this.rootFolder + File.separatorChar + this.THUMB_DIR);
-      thumb = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC, this.THUMB_DIM, this.THUMB_DIM, Scalr.OP_ANTIALIAS);
       this.fileNameThumb = this.fileName;
       if (Files.notExists(pathThumb)) {
         Files.createDirectory(pathThumb);
       }
       File fThumb = new File(pathThumb.toString(), this.fileNameThumb);
       ImageIO.write(thumb, "jpg", fThumb);
+
       setDimensionsFromImage(thumb, true);
     } catch (IOException ioe) {
       ioe.printStackTrace();
     }
     //TODO catch errors a bit better?
+  }
+
+  public BufferedImage getThumbFromImage(BufferedImage image) {
+    BufferedImage thumb = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC,
+        this.THUMB_DIM, this.THUMB_DIM, Scalr.OP_ANTIALIAS);
+    return thumb;
   }
 
   public byte[] getImage() throws IOException {
