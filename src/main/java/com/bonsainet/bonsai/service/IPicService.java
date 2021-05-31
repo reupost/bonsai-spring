@@ -12,7 +12,7 @@ public interface IPicService {
 
   Page<Pic> findAll(Pageable pageable);
 
-  Pic save(Pic p);
+  Pic save(Pic p) throws InterruptedException;
 
   void delete(Pic p);
 

@@ -2,6 +2,8 @@ package com.bonsainet.bonsai.service;
 
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.repository.PicRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
@@ -10,9 +12,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 
 @Service
 public class PicService implements IPicService {
+
+  private static final Logger logger = LoggerFactory.getLogger(PicService.class);
 
   @Value("${pic.rootfolder}")
   private String picRootFolder;
@@ -37,11 +44,18 @@ public class PicService implements IPicService {
   }
 
   @Override
-  public Pic save(Pic p) {
+  public Pic save(Pic p) throws InterruptedException {
     p.setRootFolder(this.picRootFolder);
     p.setDimensions();
-    p.setThumb();
-
+    p.workStatus = "working";
+    Future<String> workStatus = p.setThumb();
+    logger.debug(String.valueOf(p));
+    try {
+      workStatus.get();
+    } catch (ExecutionException | InterruptedException e) {
+      e.printStackTrace();
+    }
+    logger.debug(String.valueOf(p));
     return repository.save(p);
   }
 

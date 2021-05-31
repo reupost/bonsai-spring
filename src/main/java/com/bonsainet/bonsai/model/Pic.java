@@ -7,6 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import javax.imageio.ImageIO;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,6 +31,9 @@ public class Pic {
   public static final Integer THUMB_DIM = 200;
   @Transient
   public static final String THUMB_DIR = "thumbs";
+  @Transient
+  @Setter(AccessLevel.NONE)
+  public String workStatus;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -91,26 +97,41 @@ public class Pic {
     setDimensionsFromImage(this.getImageFromFile(f), false);
   }
 
-  public void setThumb() {
-    BufferedImage thumb;
-    try {
-      File f = new File(this.rootFolder, this.fileName);
-      BufferedImage image = getImageFromFile(f);
-      thumb = getThumbFromImage(image);
 
-      Path pathThumb = Paths.get(this.rootFolder + File.separatorChar + this.THUMB_DIR);
-      this.fileNameThumb = this.fileName;
-      if (Files.notExists(pathThumb)) {
-        Files.createDirectory(pathThumb);
+  public Future<String> setThumb() throws InterruptedException {
+    CompletableFuture<String> completableFuture = new CompletableFuture<>();
+    this.dimXThumb = 0;
+    this.dimYThumb = 0;
+    this.fileNameThumb = "";
+    this.workStatus = "Calculating";
+
+    Executors.newCachedThreadPool().submit(() -> {
+      BufferedImage thumb;
+      try {
+        File f = new File(this.rootFolder, this.fileName);
+        BufferedImage image = getImageFromFile(f);
+        thumb = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC,
+                this.THUMB_DIM, this.THUMB_DIM, Scalr.OP_ANTIALIAS);
+
+        Path pathThumb = Paths.get(this.rootFolder + File.separatorChar + this.THUMB_DIR);
+        this.fileNameThumb = this.fileName;
+        if (Files.notExists(pathThumb)) {
+          Files.createDirectory(pathThumb);
+        }
+        File fThumb = new File(pathThumb.toString(), this.fileNameThumb);
+        ImageIO.write(thumb, "jpg", fThumb);
+
+        this.dimXThumb = thumb.getWidth();
+        this.dimYThumb = thumb.getHeight();
+
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
       }
-      File fThumb = new File(pathThumb.toString(), this.fileNameThumb);
-      ImageIO.write(thumb, "jpg", fThumb);
+      //TODO catch errors a bit better?
+      completableFuture.complete("Done");
+    });
 
-      setDimensionsFromImage(thumb, true);
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-    }
-    //TODO catch errors a bit better?
+    return completableFuture;
   }
 
   public BufferedImage getThumbFromImage(BufferedImage image) {
