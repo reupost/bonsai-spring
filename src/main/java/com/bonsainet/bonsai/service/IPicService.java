@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Future;
 
 public interface IPicService {
 
@@ -12,7 +13,7 @@ public interface IPicService {
 
   Page<Pic> findAll(Pageable pageable);
 
-  Pic save(Pic p) throws InterruptedException;
+  Future<Pic> save(Pic p) throws InterruptedException;
 
   void delete(Pic p);
 

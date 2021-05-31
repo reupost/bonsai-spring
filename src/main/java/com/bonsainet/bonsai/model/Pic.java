@@ -98,40 +98,32 @@ public class Pic {
   }
 
 
-  public Future<String> setThumb() throws InterruptedException {
-    CompletableFuture<String> completableFuture = new CompletableFuture<>();
+  public void setThumb() {
     this.dimXThumb = 0;
     this.dimYThumb = 0;
     this.fileNameThumb = "";
-    this.workStatus = "Calculating";
 
-    Executors.newCachedThreadPool().submit(() -> {
-      BufferedImage thumb;
-      try {
-        File f = new File(this.rootFolder, this.fileName);
-        BufferedImage image = getImageFromFile(f);
-        thumb = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC,
-                this.THUMB_DIM, this.THUMB_DIM, Scalr.OP_ANTIALIAS);
+    BufferedImage thumb;
+    try {
+      File f = new File(this.rootFolder, this.fileName);
+      BufferedImage image = getImageFromFile(f);
+      thumb = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC,
+              this.THUMB_DIM, this.THUMB_DIM, Scalr.OP_ANTIALIAS);
 
-        Path pathThumb = Paths.get(this.rootFolder + File.separatorChar + this.THUMB_DIR);
-        this.fileNameThumb = this.fileName;
-        if (Files.notExists(pathThumb)) {
-          Files.createDirectory(pathThumb);
-        }
-        File fThumb = new File(pathThumb.toString(), this.fileNameThumb);
-        ImageIO.write(thumb, "jpg", fThumb);
-
-        this.dimXThumb = thumb.getWidth();
-        this.dimYThumb = thumb.getHeight();
-
-      } catch (IOException ioe) {
-        ioe.printStackTrace();
+      Path pathThumb = Paths.get(this.rootFolder + File.separatorChar + this.THUMB_DIR);
+      this.fileNameThumb = this.fileName;
+      if (Files.notExists(pathThumb)) {
+        Files.createDirectory(pathThumb);
       }
-      //TODO catch errors a bit better?
-      completableFuture.complete("Done");
-    });
+      File fThumb = new File(pathThumb.toString(), this.fileNameThumb);
+      ImageIO.write(thumb, "jpg", fThumb);
 
-    return completableFuture;
+      this.dimXThumb = thumb.getWidth();
+      this.dimYThumb = thumb.getHeight();
+
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    }
   }
 
   public BufferedImage getThumbFromImage(BufferedImage image) {

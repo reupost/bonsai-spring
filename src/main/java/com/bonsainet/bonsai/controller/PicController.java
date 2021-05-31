@@ -4,7 +4,13 @@ import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.service.IPicService;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
+
+import com.bonsainet.bonsai.service.PicService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +35,8 @@ import static java.lang.Thread.sleep;
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("pic")
 public class PicController {
+
+  private static final Logger logger = LoggerFactory.getLogger(PicController.class);
 
   @Value("${pic.rootfolder}")
   private String picRootFolder;
@@ -149,8 +157,22 @@ public class PicController {
   public @ResponseBody byte[] updateImage(@RequestParam(required = true) Integer id)
       throws IOException {
     Optional<Pic> p = picService.findById(id);
+    Future<Pic> futureSave = null;
+    Pic pSaved = null;
     if (p.isPresent()) {
-      picService.save(p.get());
+      try {
+        futureSave = picService.save(p.get());
+      } catch (InterruptedException ie) {
+        ie.printStackTrace();
+      }
+      // this is needed if we want the thumb via getImageThumb(), since it might not be generated yet,
+      // but the full image will definitely be there already in the filesystem.
+//      try {
+//        pSaved = futureSave.get();
+//      } catch (InterruptedException | ExecutionException e) {
+//
+//      }
+//      return pSaved.getImageThumb();
       return p.get().getImage();
     } else {
       return null;
@@ -165,6 +187,7 @@ public class PicController {
       throws IOException {
     Optional<Pic> p = picService.findById(id);
     if (p.isPresent()) {
+      // TODO: how do we check if the thumbnail is ready?
       return p.get().getImageThumb();
     } else {
       return null;
@@ -172,7 +195,7 @@ public class PicController {
   }
 
   @PutMapping(path = "/pic")
-  public Pic setPic(@Valid @RequestBody Pic p) throws InterruptedException {
+  public Future<Pic> setPic(@Valid @RequestBody Pic p) throws InterruptedException {
     // sleep(1000);
     return picService.save(p);
   }

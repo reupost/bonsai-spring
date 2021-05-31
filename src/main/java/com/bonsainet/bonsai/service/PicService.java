@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 
@@ -44,19 +46,21 @@ public class PicService implements IPicService {
   }
 
   @Override
-  public Pic save(Pic p) throws InterruptedException {
-    p.setRootFolder(this.picRootFolder);
-    p.setDimensions();
-    p.workStatus = "working";
-    Future<String> workStatus = p.setThumb();
-    logger.debug(String.valueOf(p));
-    try {
-      workStatus.get();
-    } catch (ExecutionException | InterruptedException e) {
-      e.printStackTrace();
-    }
-    logger.debug(String.valueOf(p));
-    return repository.save(p);
+  public Future<Pic> save(Pic p) throws InterruptedException {
+    CompletableFuture<Pic> completableFuture = new CompletableFuture<>();
+
+    p.workStatus = "Calculating";
+
+    Executors.newCachedThreadPool().submit(() -> {
+      p.setRootFolder(this.picRootFolder);
+      p.setDimensions();
+      p.setThumb();
+      Pic pSaved = repository.save(p);
+      p.workStatus = "Done";
+      completableFuture.complete(pSaved);
+    });
+
+    return completableFuture;
   }
 
   @Override
