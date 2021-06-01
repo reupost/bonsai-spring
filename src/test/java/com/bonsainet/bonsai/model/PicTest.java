@@ -21,8 +21,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class PicTest {
-  static final String AUTHENTICATED_USERS = "NT AUTHORITY\\Authenticated Users";
-  static final String ADMIN_USERS = "BUILTIN\\Administrators";
 
   @Test
   public void setDimensionsTest() {
