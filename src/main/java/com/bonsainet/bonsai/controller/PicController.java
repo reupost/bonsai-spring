@@ -188,6 +188,7 @@ public class PicController {
     Optional<Pic> p = picService.findById(id);
     if (p.isPresent()) {
       // TODO: how do we check if the thumbnail is ready?
+      //  Could set it to a default 'preparing...' image until its set properly
       return p.get().getImageThumb();
     } else {
       return null;

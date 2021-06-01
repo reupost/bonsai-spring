@@ -49,14 +49,11 @@ public class PicService implements IPicService {
   public Future<Pic> save(Pic p) throws InterruptedException {
     CompletableFuture<Pic> completableFuture = new CompletableFuture<>();
 
-    p.workStatus = "Calculating";
-
     Executors.newCachedThreadPool().submit(() -> {
       p.setRootFolder(this.picRootFolder);
       p.setDimensions();
       p.setThumb();
       Pic pSaved = repository.save(p);
-      p.workStatus = "Done";
       completableFuture.complete(pSaved);
     });
 

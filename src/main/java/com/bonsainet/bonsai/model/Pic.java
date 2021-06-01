@@ -31,9 +31,6 @@ public class Pic {
   public static final Integer THUMB_DIM = 200;
   @Transient
   public static final String THUMB_DIR = "thumbs";
-  @Transient
-  @Setter(AccessLevel.NONE)
-  public String workStatus;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,30 +70,16 @@ public class Pic {
     return image;
   }
 
-  public void setDimensionsFromImage(BufferedImage image, boolean forThumb) {
-    if (forThumb) {
-      this.dimXThumb = 0;
-      this.dimYThumb = 0;
-    } else {
-      this.dimX = 0;
-      this.dimY = 0;
-    }
-    if (image != null) {
-      if (forThumb) {
-        this.dimXThumb = image.getWidth();
-        this.dimYThumb = image.getHeight();
-      } else {
-        this.dimX = image.getWidth();
-        this.dimY = image.getHeight();
-      }
-    }
-  }
-
   public void setDimensions() {
     File f = new File(this.rootFolder, this.fileName);
-    setDimensionsFromImage(this.getImageFromFile(f), false);
+    BufferedImage image = this.getImageFromFile(f);
+    this.dimX = 0;
+    this.dimY = 0;
+    if (image != null) {
+      this.dimX = image.getWidth();
+      this.dimY = image.getHeight();
+    }
   }
-
 
   public void setThumb() {
     this.dimXThumb = 0;
