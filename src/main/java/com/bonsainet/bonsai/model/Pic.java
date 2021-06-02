@@ -17,6 +17,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
@@ -109,12 +111,14 @@ public class Pic {
     }
   }
 
+  @JsonIgnore
   public BufferedImage getThumbFromImage(BufferedImage image) {
     BufferedImage thumb = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC,
         this.THUMB_DIM, this.THUMB_DIM, Scalr.OP_ANTIALIAS);
     return thumb;
   }
 
+  @JsonIgnore
   public byte[] getImage() throws IOException {
     File file = new File(this.rootFolder, this.fileName);
     byte[] fileContent;
@@ -123,6 +127,7 @@ public class Pic {
     return fileContent;
   }
 
+  @JsonIgnore
   public byte[] getImageThumb() throws IOException {
     File file = new File(this.rootFolder + File.separatorChar + this.THUMB_DIR, this.fileNameThumb);
     byte[] fileContent;

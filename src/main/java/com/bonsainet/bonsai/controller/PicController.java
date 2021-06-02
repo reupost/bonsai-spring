@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
-import com.bonsainet.bonsai.service.PicService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -196,9 +195,15 @@ public class PicController {
   }
 
   @PutMapping(path = "/pic")
-  public Future<Pic> setPic(@Valid @RequestBody Pic p) throws InterruptedException {
-    // sleep(1000);
-    return picService.save(p);
+  public Pic setPic(@Valid @RequestBody Pic p) {
+    Future<Pic> futurePic = null;
+    try {
+      futurePic = picService.save(p);
+      return futurePic.get();
+    } catch (InterruptedException | ExecutionException ie) {
+      ie.printStackTrace();
+    }
+    return null;
   }
 
   @DeleteMapping(path = "/pics/del/{id}")
