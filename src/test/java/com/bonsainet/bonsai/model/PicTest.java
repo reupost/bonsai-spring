@@ -25,8 +25,8 @@ public class PicTest {
   @Test
   public void setDimensionsTest() {
     Pic pic = new Pic();
-    final Integer imgWidth = 100;
-    final Integer imgHeight = 150;
+    final int imgWidth = 100;
+    final int imgHeight = 150;
     BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
 
     File file = null;
@@ -63,8 +63,8 @@ public class PicTest {
   @Test
   public void setThumbTest() {
     Pic pic = new Pic();
-    final Integer imgWidth = 200;
-    final Integer imgHeight = 300;
+    final int imgWidth = 200;
+    final int imgHeight = 300;
     BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
 
     File file = null;
@@ -100,8 +100,8 @@ public class PicTest {
   @Test
   public void setBadThumbTest() {
     Pic pic = new Pic();
-    final Integer imgWidth = 200;
-    final Integer imgHeight = 300;
+    final int imgWidth = 200;
+    final int imgHeight = 300;
     Path pathThumb;
     File fThumb = null;
     File folderThumb = null;
@@ -291,8 +291,8 @@ public class PicTest {
 
   @Test
   public void getImageThumbTest() {
-    final Integer imgWidth = 200;
-    final Integer imgHeight = 300;
+    final int imgWidth = 200;
+    final int imgHeight = 300;
     Pic pic = new Pic();
     BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
     File thumbFile;

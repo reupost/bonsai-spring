@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,16 +47,20 @@ public class PicService implements IPicService {
   }
 
   @Override
-  public Future<Pic> save(Pic p) throws InterruptedException {
+  public Future<Pic> save(Pic p) throws InterruptedException, IllegalArgumentException {
     CompletableFuture<Pic> completableFuture = new CompletableFuture<>();
 
-    Executors.newCachedThreadPool().submit(() -> {
-      p.setRootFolder(this.picRootFolder);
+    try {
+      if (StringUtils.isEmpty(p.getRootFolder())) p.setRootFolder(this.picRootFolder);
       p.setDimensions();
-      p.setThumb();
-      Pic pSaved = repository.save(p);
-      completableFuture.complete(pSaved);
-    });
+      Executors.newCachedThreadPool().submit(() -> {
+        p.setThumb();
+        Pic pSaved = repository.save(p);
+        completableFuture.complete(pSaved);
+      });
+    } catch (NullPointerException npe) {
+      throw new IllegalArgumentException("invalid pic");
+    }
 
     return completableFuture;
   }

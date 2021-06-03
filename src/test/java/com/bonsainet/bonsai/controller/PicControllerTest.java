@@ -14,6 +14,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -316,6 +319,39 @@ public class PicControllerTest {
     }
 
     @Test
+    void findPicsForPageEntityTypeTest() throws Exception {
+        int passedSize = 1;
+        int passedPage = 0;
+        String passedEntityType = "entity";
+
+        int picId = 1;
+
+        Pic pic = new Pic();
+        pic.setId(picId);
+        ArrayList<Pic> picList = new ArrayList<>();
+        picList.add(pic);
+
+        ArrayList<Sort.Order> sortBy = new ArrayList<>();
+        sortBy.add(new Sort.Order(Sort.Direction.ASC, "id"));
+        Sort sortFinal = Sort.by(sortBy);
+
+        PageRequest pageRequest = PageRequest.of(passedPage, passedSize, sortFinal);
+        Page<Pic> pagePic = new PageImpl<>(picList, pageRequest, picList.size());
+
+        Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
+        when(picService.findByEntityType(passedEntityType, paging)).thenReturn(pagePic);
+
+        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage + "&size=" + passedSize + "&entityType=" + passedEntityType))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.content", hasSize(passedSize)))
+                .andExpect(jsonPath("$.content[0].id", is(picId)));
+
+        verify(picService).findByEntityType(passedEntityType,  paging);
+        verifyNoMoreInteractions(picService);
+    }
+
+    @Test
     void findPicsForPageEntityTypeEntityIdTest() throws Exception {
         int passedSize = 1;
         int passedPage = 0;
@@ -346,6 +382,41 @@ public class PicControllerTest {
                 .andExpect(jsonPath("$.content[0].id", is(picId)));
 
         verify(picService).findByEntityTypeAndEntityId(passedEntityType, passedEntityId, paging);
+        verifyNoMoreInteractions(picService);
+    }
+
+    @Test
+    void findPicsForPageFilterEntityTypeEntityIdTest() throws Exception {
+        int passedSize = 1;
+        int passedPage = 0;
+        String passedFilter = "test";
+        String passedEntityType = "entity";
+        int passedEntityId = 2;
+
+        int picId = 1;
+
+        Pic pic = new Pic();
+        pic.setId(picId);
+        ArrayList<Pic> picList = new ArrayList<>();
+        picList.add(pic);
+
+        ArrayList<Sort.Order> sortBy = new ArrayList<>();
+        sortBy.add(new Sort.Order(Sort.Direction.ASC, "id"));
+        Sort sortFinal = Sort.by(sortBy);
+
+        PageRequest pageRequest = PageRequest.of(passedPage, passedSize, sortFinal);
+        Page<Pic> pagePic = new PageImpl<>(picList, pageRequest, picList.size());
+
+        Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
+        when(picService.findByEntityTypeAndEntityIdAndTitleContaining(passedEntityType, passedEntityId, passedFilter, paging)).thenReturn(pagePic);
+
+        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter + "&entityType=" + passedEntityType + "&entityId=" + passedEntityId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.content", hasSize(passedSize)))
+                .andExpect(jsonPath("$.content[0].id", is(picId)));
+
+        verify(picService).findByEntityTypeAndEntityIdAndTitleContaining(passedEntityType, passedEntityId, passedFilter, paging);
         verifyNoMoreInteractions(picService);
     }
 
@@ -406,4 +477,41 @@ public class PicControllerTest {
         verifyNoMoreInteractions(picService);
     }
 
+    @Test
+    public void getImageTest() throws Exception {
+        int picId = 1;
+
+        Pic pic = new Pic();
+        pic.setId(picId);
+
+        final int imgWidth = 100;
+        final int imgHeight = 150;
+        BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
+
+        File file = null;
+        try {
+            file = File.createTempFile("tmp", ".jpg");
+            ImageIO.write(bufferedImage, "jpg", file);
+
+            pic.setRootFolder(file.getParentFile().getCanonicalPath());
+            pic.setFileName(file.getName());
+            pic.setDimensions();
+
+            when(picService.findById(picId)).thenReturn(Optional.of(pic));
+
+            this.mockMvc.perform(get("/pic/image?id=" + picId))
+                    .andExpect(status().isOk());
+                    //.andExpect(content().contentType(MediaType.IMAGE_JPEG));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (file.isFile() && !file.delete()) {
+                // failed to delete the (existing) file
+            }
+        }
+
+        verify(picService).findById(picId);
+        verifyNoMoreInteractions(picService);
+    }
 }
