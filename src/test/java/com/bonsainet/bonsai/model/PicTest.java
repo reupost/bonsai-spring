@@ -98,6 +98,66 @@ public class PicTest {
   }
 
   @Test
+  public void setThumbUnchangedTest() {
+    Pic pic = new Pic();
+    final int imgWidth = 200;
+    final int imgHeight = 300;
+    BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
+
+    File file = null;
+    try {
+      file = File.createTempFile("tmp", ".jpg");
+      ImageIO.write(bufferedImage, "jpg", file);
+
+      pic.setRootFolder(file.getParentFile().getCanonicalPath());
+      pic.setFileName(file.getName());
+      pic.setThumb();
+
+      assertThat(pic.getImageHash(), equalTo(pic.getMD5HashFromFile(file)));
+
+      // now delete thumb file and ensure it is not recreated
+      Path pathThumb = Paths.get(pic.getRootFolder() + File.separatorChar + pic.THUMB_DIR);
+      File fThumb = new File(pathThumb.toString(), pic.getFileNameThumb());
+      if (fThumb.isFile()) {
+        fThumb.delete();
+      }
+      File thumbFolder = new File(fThumb.getParent());
+      if (thumbFolder.isDirectory()) {
+        thumbFolder.delete();
+      }
+
+      pic.setThumb();
+
+      assertThat(fThumb.exists(), is(false));
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      //clean up files and thumb folder
+      if (file.isFile()) {
+        file.delete();
+        Path pathThumb = Paths.get(pic.getRootFolder() + File.separatorChar + pic.THUMB_DIR);
+        try {
+          File fThumb = new File(pathThumb.toString(), pic.getFileNameThumb());
+          if (fThumb.isFile()) {
+            fThumb.delete();
+          }
+        } catch (NullPointerException npe) {
+          //do nothing, could be normal
+        }
+        File thumbFolder = new File(pathThumb.toString());
+        if (thumbFolder.isDirectory()) {
+          thumbFolder.delete();
+        }
+      }
+    }
+
+    assertThat(pic.getDimXThumb(), lessThanOrEqualTo(Integer.valueOf(pic.THUMB_DIM)));
+    assertThat(pic.getDimYThumb(), lessThanOrEqualTo(Integer.valueOf(pic.THUMB_DIM)));
+  }
+
+
+  @Test
   public void setBadThumbTest() {
     Pic pic = new Pic();
     final int imgWidth = 200;
@@ -176,7 +236,7 @@ public class PicTest {
   @Test
   public void settersDoNotExistTest() {
     String[] setMethodsShouldNotExist = {"setFileNameThumb", "setDimX", "setDimY", "setDimXThumb",
-        "setDimYThumb"};
+        "setDimYThumb", "setImageHash"};
     try {
       Class cls = Class.forName("com.bonsainet.bonsai.model.Pic");
       Method m[] = cls.getMethods();

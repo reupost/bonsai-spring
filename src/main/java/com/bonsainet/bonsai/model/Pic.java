@@ -1,5 +1,7 @@
 package com.bonsainet.bonsai.model;
 
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -7,9 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import javax.imageio.ImageIO;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.imgscalr.Scalr;
 
 @Entity
@@ -55,11 +55,18 @@ public class Pic {
   private Integer dimXThumb;
   @Setter(AccessLevel.NONE)
   private Integer dimYThumb;
+  @Setter(AccessLevel.NONE)
+  private String imageHash;
 
   //@Transient
   //private byte[] image;
 
   public Pic() {
+  }
+
+  public String getMD5HashFromFile(File f) throws IOException {
+    HashCode hash = com.google.common.io.Files.hash(f, Hashing.md5());
+    return hash.toString().toUpperCase();
   }
 
   public BufferedImage getImageFromFile(File f) {
@@ -84,29 +91,34 @@ public class Pic {
   }
 
   public void setThumb() {
-    this.dimXThumb = 0;
-    this.dimYThumb = 0;
-    this.fileNameThumb = "";
 
     BufferedImage thumb;
     try {
       File f = new File(this.rootFolder, this.fileName);
       BufferedImage image = getImageFromFile(f);
-      thumb = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC,
-              this.THUMB_DIM, this.THUMB_DIM, Scalr.OP_ANTIALIAS);
+      String hash = getMD5HashFromFile(f);
+      if (!StringUtils.equals(hash, this.imageHash)) { //image has changed
+        this.imageHash = hash;
 
-      Path pathThumb = Paths.get(this.rootFolder + File.separatorChar + this.THUMB_DIR);
-      this.fileNameThumb = this.fileName;
-      if (Files.notExists(pathThumb)) {
-        Files.createDirectory(pathThumb);
+        thumb = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC,
+            this.THUMB_DIM, this.THUMB_DIM, Scalr.OP_ANTIALIAS);
+
+        Path pathThumb = Paths.get(this.rootFolder + File.separatorChar + this.THUMB_DIR);
+        this.fileNameThumb = this.fileName;
+        if (Files.notExists(pathThumb)) {
+          Files.createDirectory(pathThumb);
+        }
+        File fThumb = new File(pathThumb.toString(), this.fileNameThumb);
+        ImageIO.write(thumb, "jpg", fThumb);
+
+        this.dimXThumb = thumb.getWidth();
+        this.dimYThumb = thumb.getHeight();
       }
-      File fThumb = new File(pathThumb.toString(), this.fileNameThumb);
-      ImageIO.write(thumb, "jpg", fThumb);
-
-      this.dimXThumb = thumb.getWidth();
-      this.dimYThumb = thumb.getHeight();
-
     } catch (IOException ioe) {
+      this.dimXThumb = 0;
+      this.dimYThumb = 0;
+      this.fileNameThumb = "";
+      this.imageHash = "";
       ioe.printStackTrace();
     }
   }
