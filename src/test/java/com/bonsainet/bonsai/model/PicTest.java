@@ -3,6 +3,7 @@ package com.bonsainet.bonsai.model;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -22,27 +23,64 @@ import org.junit.jupiter.api.Test;
 
 public class PicTest {
 
-  @Test
-  public void setDimensionsTest() {
-    Pic pic = new Pic();
-    final int imgWidth = 100;
-    final int imgHeight = 150;
-    BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
+  File getTempImage(int imgHeight, int imgWidth) {
+    BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight,
+        BufferedImage.TYPE_3BYTE_BGR);
 
     File file = null;
     try {
       file = File.createTempFile("tmp", ".jpg");
       ImageIO.write(bufferedImage, "jpg", file);
 
-      pic.setRootFolder(file.getParentFile().getCanonicalPath());
-      pic.setFileName(file.getName());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return file;
+  }
+
+  void removeTempImage(File f, boolean andDeleteThumb) {
+    Path pathThumb = null;
+    try {
+      if (f.isFile()) {
+        f.setWritable(true);
+        f.delete();
+        if (andDeleteThumb)
+          pathThumb = Paths
+              .get(f.getParentFile().getCanonicalPath() + File.separatorChar + Pic.THUMB_DIR);
+        File fThumb = new File(pathThumb.toString(), f.getName());
+        if (fThumb.isFile()) {
+          try {
+            fThumb.setWritable(true);
+            fThumb.delete();
+          } catch (NullPointerException npe) {
+            //do nothing, could be normal
+          }
+        }
+        File thumbFolder = new File(fThumb.getParent());
+        if (thumbFolder.isDirectory()) {
+          thumbFolder.setWritable(true);
+          thumbFolder.delete();
+        }
+      }
+    } catch (Exception e) {
+      // fail silently?!
+    }
+  }
+
+  @Test
+  public void setDimensionsTest() {
+    Pic pic = new Pic();
+    final int imgWidth = 100;
+    final int imgHeight = 150;
+    File img = getTempImage(imgHeight, imgWidth);
+    try {
+      pic.setRootFolder(img.getParentFile().getCanonicalPath());
+      pic.setFileName(img.getName());
       pic.setDimensions();
     } catch (Exception e) {
       e.printStackTrace();
     } finally {
-      if (file.isFile() && !file.delete()) {
-        // failed to delete the (existing) file
-      }
+      removeTempImage(img, false);
     }
 
     assertEquals(pic.getDimX(), imgWidth);
@@ -52,12 +90,12 @@ public class PicTest {
   @Test
   public void getThumbFromImageTest() {
     Pic pic = new Pic();
-    BufferedImage bufferedImage = new BufferedImage(pic.THUMB_DIM*4, pic.THUMB_DIM*2,
+    BufferedImage bufferedImage = new BufferedImage(Pic.THUMB_DIM *4, Pic.THUMB_DIM *2,
         BufferedImage.TYPE_INT_RGB); // create a BufferedImage object
 
     BufferedImage thumb = pic.getThumbFromImage(bufferedImage);
-    assertEquals(thumb.getWidth(), pic.THUMB_DIM);
-    assertEquals(thumb.getHeight(), pic.THUMB_DIM * 2.0/4.0);
+    assertEquals(thumb.getWidth(), Pic.THUMB_DIM);
+    assertEquals(thumb.getHeight(), Pic.THUMB_DIM * 2.0/4.0);
   }
 
   @Test
@@ -65,36 +103,20 @@ public class PicTest {
     Pic pic = new Pic();
     final int imgWidth = 200;
     final int imgHeight = 300;
-    BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
+    File img = getTempImage(imgHeight, imgWidth);
 
-    File file = null;
     try {
-      file = File.createTempFile("tmp", ".jpg");
-      ImageIO.write(bufferedImage, "jpg", file);
-
-      pic.setRootFolder(file.getParentFile().getCanonicalPath());
-      pic.setFileName(file.getName());
+      pic.setRootFolder(img.getParentFile().getCanonicalPath());
+      pic.setFileName(img.getName());
       pic.setThumb();
     } catch (Exception e) {
       e.printStackTrace();
     } finally {
-      //clean up files and thumb folder
-      if (file.isFile()) {
-        file.delete();
-        Path pathThumb = Paths.get(pic.getRootFolder() + File.separatorChar + pic.THUMB_DIR);
-        File fThumb = new File(pathThumb.toString(), pic.getFileNameThumb());
-        if (fThumb.isFile()) {
-          fThumb.delete();
-        }
-        File thumbFolder = new File(fThumb.getParent());
-        if (thumbFolder.isDirectory()) {
-          thumbFolder.delete();
-        }
-      }
+      removeTempImage(img, true);
     }
 
-    assertThat(pic.getDimXThumb(), lessThanOrEqualTo(Integer.valueOf(pic.THUMB_DIM)));
-    assertThat(pic.getDimYThumb(), lessThanOrEqualTo(Integer.valueOf(pic.THUMB_DIM)));
+    assertThat(pic.getDimXThumb(), lessThanOrEqualTo(Pic.THUMB_DIM));
+    assertThat(pic.getDimYThumb(), lessThanOrEqualTo(Pic.THUMB_DIM));
   }
 
   @Test
@@ -102,21 +124,17 @@ public class PicTest {
     Pic pic = new Pic();
     final int imgWidth = 200;
     final int imgHeight = 300;
-    BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
+    File img = getTempImage(imgHeight, imgWidth);
 
-    File file = null;
     try {
-      file = File.createTempFile("tmp", ".jpg");
-      ImageIO.write(bufferedImage, "jpg", file);
-
-      pic.setRootFolder(file.getParentFile().getCanonicalPath());
-      pic.setFileName(file.getName());
+      pic.setRootFolder(img.getParentFile().getCanonicalPath());
+      pic.setFileName(img.getName());
       pic.setThumb();
 
-      assertThat(pic.getImageHash(), equalTo(pic.getMD5HashFromFile(file)));
+      assertThat(pic.getImageHash(), equalTo(pic.getMD5HashFromFile(img)));
 
-      // now delete thumb file and ensure it is not recreated
-      Path pathThumb = Paths.get(pic.getRootFolder() + File.separatorChar + pic.THUMB_DIR);
+      // now delete thumb file and ensure it is not recreated (which it would be if re-thumbed)
+      Path pathThumb = Paths.get(pic.getRootFolder() + File.separatorChar + Pic.THUMB_DIR);
       File fThumb = new File(pathThumb.toString(), pic.getFileNameThumb());
       if (fThumb.isFile()) {
         fThumb.delete();
@@ -133,27 +151,11 @@ public class PicTest {
     } catch (Exception e) {
       e.printStackTrace();
     } finally {
-      //clean up files and thumb folder
-      if (file.isFile()) {
-        file.delete();
-        Path pathThumb = Paths.get(pic.getRootFolder() + File.separatorChar + pic.THUMB_DIR);
-        try {
-          File fThumb = new File(pathThumb.toString(), pic.getFileNameThumb());
-          if (fThumb.isFile()) {
-            fThumb.delete();
-          }
-        } catch (NullPointerException npe) {
-          //do nothing, could be normal
-        }
-        File thumbFolder = new File(pathThumb.toString());
-        if (thumbFolder.isDirectory()) {
-          thumbFolder.delete();
-        }
-      }
+      removeTempImage(img, true);
     }
 
-    assertThat(pic.getDimXThumb(), lessThanOrEqualTo(Integer.valueOf(pic.THUMB_DIM)));
-    assertThat(pic.getDimYThumb(), lessThanOrEqualTo(Integer.valueOf(pic.THUMB_DIM)));
+    assertThat(pic.getDimXThumb(), lessThanOrEqualTo(Pic.THUMB_DIM));
+    assertThat(pic.getDimYThumb(), lessThanOrEqualTo(Pic.THUMB_DIM));
   }
 
 
@@ -165,18 +167,15 @@ public class PicTest {
     Path pathThumb;
     File fThumb = null;
     File folderThumb = null;
+    File img = getTempImage(imgHeight, imgWidth);
     BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
 
-    File file = null;
     try {
-      file = File.createTempFile("tmp", ".jpg");
-      ImageIO.write(bufferedImage, "jpg", file);
-
-      pic.setRootFolder(file.getParentFile().getCanonicalPath());
-      pic.setFileName(file.getName());
+      pic.setRootFolder(img.getParentFile().getCanonicalPath());
+      pic.setFileName(img.getName());
 
       //create read-only thumb file and folder
-      pathThumb = Paths.get(pic.getRootFolder() + File.separatorChar + pic.THUMB_DIR);
+      pathThumb = Paths.get(pic.getRootFolder() + File.separatorChar + Pic.THUMB_DIR);
       if (Files.notExists(pathThumb)) {
         Files.createDirectory(pathThumb);
       }
@@ -216,17 +215,13 @@ public class PicTest {
       e.printStackTrace();
     } finally {
       //clean up files and thumb folder
-      if (file.isFile()) {
-        file.delete();
-        if (fThumb.isFile()) {
-          fThumb.setWritable(true);
-          fThumb.delete();
-        }
-        if (folderThumb.isDirectory()) {
-          folderThumb.setWritable(true);
-          folderThumb.delete();
-        }
+      try {
+        fThumb.setWritable(true);
+        folderThumb.setWritable(true);
+      } catch (Exception e) {
+        e.printStackTrace();
       }
+      removeTempImage(img, true);
     }
 
     assertThat(pic.getDimXThumb(), equalTo(0));
@@ -255,22 +250,20 @@ public class PicTest {
     Pic pic = new Pic();
     BufferedImage bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR);
 
-    File file;
+    File img;
     try {
-      file = File.createTempFile("tmp", ".jpg");
-      ImageIO.write(bufferedImage, "jpg", file);
+      img = File.createTempFile("tmp", ".jpg");
+      ImageIO.write(bufferedImage, "jpg", img);
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
     }
     try {
-      BufferedImage readBufferedImage = pic.getImageFromFile(file);
+      BufferedImage readBufferedImage = pic.getImageFromFile(img);
       org.assertj.core.api.AssertionsForClassTypes.assertThat(bufferedImage)
           .usingRecursiveComparison()
           .isEqualTo(readBufferedImage);
     } finally {
-      if (file.isFile() && !file.delete()) {
-        // failed to delete the (existing) file
-      }
+      removeTempImage(img, false);
     }
   }
 
@@ -292,28 +285,18 @@ public class PicTest {
     } catch (Exception e) {
       e.printStackTrace();
     } finally {
-      if (file.isFile() && !file.delete()) {
-        // failed to delete the (existing) file
-      }
+      removeTempImage(file, false);
     }
   }
 
   @Test
   public void getImageFromNonExistentFileTest() {
     Pic pic = new Pic();
-    File file = null;
+    File img = getTempImage(1, 1);
+    removeTempImage(img, false);
     try {
-      file = File.createTempFile("bad", ".txt");
-    } catch (IOException ioe) {
-      throw new RuntimeException(ioe);
-    } finally {
-      if (file.isFile() && !file.delete()) {
-        // failed to delete the (existing) file
-      }
-    }
-    try {
-      BufferedImage bufferedImage = pic.getImageFromFile(file);
-      assertEquals(bufferedImage, null);
+      BufferedImage bufferedImage = pic.getImageFromFile(img);
+      assertNull(bufferedImage);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -341,9 +324,7 @@ public class PicTest {
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
     } finally {
-      if (file.isFile() && !file.delete()) {
-        // failed to delete the (existing) file
-      }
+      removeTempImage(file, false);
     }
 
     Assert.assertArrayEquals(inBytes, outBytes);
@@ -354,7 +335,6 @@ public class PicTest {
     final int imgWidth = 200;
     final int imgHeight = 300;
     Pic pic = new Pic();
-    BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
     File thumbFile;
     BufferedImage thumbImage;
     String thumbDirectory = "";
@@ -362,12 +342,10 @@ public class PicTest {
     byte[] inBytes;
     byte[] outBytes;
 
-    File file = null;
+    File img = getTempImage(imgHeight, imgWidth);
     try {
-      file = File.createTempFile("tmp", ".jpg");
-      ImageIO.write(bufferedImage, "jpg", file);
-      pic.setRootFolder(file.getParentFile().getCanonicalPath());
-      pic.setFileName(file.getName());
+      pic.setRootFolder(img.getParentFile().getCanonicalPath());
+      pic.setFileName(img.getName());
       thumbDirectory = pic.getRootFolder() + File.separatorChar + pic.THUMB_DIR;
       pic.setThumb();
       thumbFile = new File(thumbDirectory, pic.getFileNameThumb());
@@ -380,22 +358,10 @@ public class PicTest {
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
     } finally {
-      //clean up files and thumb folder
-      if (file.isFile()) {
-        file.delete();
-        Path pathThumb = Paths.get(thumbDirectory);
-        File fThumb = new File(pathThumb.toString(), pic.getFileNameThumb());
-        if (fThumb.isFile()) {
-          fThumb.delete();
-        }
-        File thumbFolder = new File(fThumb.getParent());
-        if (thumbFolder.isDirectory()) {
-          thumbFolder.delete();
-        }
-      }
+      removeTempImage(img, true);
     }
 
-    Assert.assertArrayEquals(inBytes, outBytes);
+    Assertions.assertArrayEquals(inBytes, outBytes);
   }
 
   @Test

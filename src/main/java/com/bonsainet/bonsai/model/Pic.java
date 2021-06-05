@@ -101,9 +101,9 @@ public class Pic {
         this.imageHash = hash;
 
         thumb = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC,
-            this.THUMB_DIM, this.THUMB_DIM, Scalr.OP_ANTIALIAS);
+            THUMB_DIM, THUMB_DIM, Scalr.OP_ANTIALIAS);
 
-        Path pathThumb = Paths.get(this.rootFolder + File.separatorChar + this.THUMB_DIR);
+        Path pathThumb = Paths.get(this.rootFolder + File.separatorChar + THUMB_DIR);
         this.fileNameThumb = this.fileName;
         if (Files.notExists(pathThumb)) {
           Files.createDirectory(pathThumb);
@@ -114,7 +114,7 @@ public class Pic {
         this.dimXThumb = thumb.getWidth();
         this.dimYThumb = thumb.getHeight();
       }
-    } catch (IOException ioe) {
+    } catch (Exception ioe) {
       this.dimXThumb = 0;
       this.dimYThumb = 0;
       this.fileNameThumb = "";
@@ -125,9 +125,8 @@ public class Pic {
 
   @JsonIgnore
   public BufferedImage getThumbFromImage(BufferedImage image) {
-    BufferedImage thumb = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC,
-        this.THUMB_DIM, this.THUMB_DIM, Scalr.OP_ANTIALIAS);
-    return thumb;
+    return Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC,
+        THUMB_DIM, THUMB_DIM, Scalr.OP_ANTIALIAS);
   }
 
   @JsonIgnore
@@ -141,7 +140,7 @@ public class Pic {
 
   @JsonIgnore
   public byte[] getImageThumb() throws IOException {
-    File file = new File(this.rootFolder + File.separatorChar + this.THUMB_DIR, this.fileNameThumb);
+    File file = new File(this.rootFolder + File.separatorChar + THUMB_DIR, this.fileNameThumb);
     byte[] fileContent;
     fileContent = FileUtils.readFileToByteArray(file);
 
