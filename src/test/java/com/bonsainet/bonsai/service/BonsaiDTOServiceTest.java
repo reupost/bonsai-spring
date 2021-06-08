@@ -10,6 +10,7 @@ import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.repository.BonsaiRepository;
 
+import com.bonsainet.bonsai.repository.PicRepository;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,13 +28,14 @@ class BonsaiDTOServiceTest {
   private ApplicationContext applicationContext;
 
   BonsaiRepository bonsaiRepository;
+  PicRepository picRepository;
 
   @BeforeEach
   void setup() {
     applicationContext = mock(ApplicationContext.class);
     bonsaiRepository = mock(BonsaiRepository.class);
-    bonsaiDtoService = new BonsaiDTOService(applicationContext, bonsaiRepository);
-
+    picRepository = mock(PicRepository.class);
+    bonsaiDtoService = new BonsaiDTOService(applicationContext, bonsaiRepository, picRepository);
   }
 
   @Test
@@ -117,7 +119,7 @@ class BonsaiDTOServiceTest {
     BonsaiDTO bonsaiDto = new BonsaiDTO();
     bonsaiDto.setId(bonsaiId);
 
-    BonsaiDTO bonsaiDtoReturned = bonsaiDtoService.convertToBonsaiDTO(bonsai);
+    BonsaiDTO bonsaiDtoReturned = bonsaiDtoService.convertToBonsaiDTO(bonsai, false);
 
     assertEquals(bonsaiDtoReturned, bonsaiDto);
   }

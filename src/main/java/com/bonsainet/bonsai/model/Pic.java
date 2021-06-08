@@ -8,7 +8,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclEntryPermission;
+import java.nio.file.attribute.AclEntryType;
+import java.nio.file.attribute.AclFileAttributeView;
+import java.nio.file.attribute.UserPrincipal;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -58,9 +65,6 @@ public class Pic {
   @Setter(AccessLevel.NONE)
   private String imageHash;
 
-  //@Transient
-  //private byte[] image;
-
   public Pic() {
   }
 
@@ -91,7 +95,6 @@ public class Pic {
   }
 
   public void setThumb() {
-
     BufferedImage thumb;
     try {
       File f = new File(this.rootFolder, this.fileName);
@@ -107,6 +110,8 @@ public class Pic {
         this.fileNameThumb = this.fileName;
         if (Files.notExists(pathThumb)) {
           Files.createDirectory(pathThumb);
+        } else {
+          setFolderPermission(pathThumb, true);
         }
         File fThumb = new File(pathThumb.toString(), this.fileNameThumb);
         ImageIO.write(thumb, "jpg", fThumb);
@@ -147,4 +152,39 @@ public class Pic {
     return fileContent;
   }
 
+  private void setFolderPermission(Path path, boolean writeable) {
+    File folder = new File(String.valueOf(path));
+    boolean success = folder.setWritable(false, false);
+    if (!success) {
+      //ok, probably windows...
+      try {
+        AclFileAttributeView view = Files.getFileAttributeView(
+            path, AclFileAttributeView.class);
+        List<AclEntry> acls = view.getAcl();
+        for (int i = 0; i < acls.size(); i++) {
+          UserPrincipal principal = acls.get(i).principal();
+          Set<AclEntryPermission> permissions = acls.get(i).permissions();
+          if (writeable) {
+            permissions.add(AclEntryPermission.WRITE_DATA);
+          } else {
+            permissions.remove(AclEntryPermission.WRITE_DATA);
+          }
+
+          // create a new ACL entry
+          AclEntry entry = AclEntry.newBuilder()
+              .setType(AclEntryType.ALLOW)
+              .setPrincipal(principal)
+              .setPermissions(permissions)
+              .build();
+
+          // replace the ACL entry for authenticated users
+          acls.set(i, entry);
+        }
+        // set the updated list of ACLs
+        view.setAcl(acls);
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+      }
+    }
+  }
 }

@@ -2,10 +2,16 @@ package com.bonsainet.bonsai.service;
 
 import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.model.BonsaiDTO;
+import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.repository.BonsaiRepository;
+import com.bonsainet.bonsai.repository.PicRepository;
+import java.util.ArrayList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,10 +24,13 @@ public class BonsaiDTOService implements IBonsaiDTOService {
   private final ApplicationContext context;
 
   private final BonsaiRepository repository;
+  private final PicRepository picRepository;
 
-  public BonsaiDTOService(ApplicationContext context, BonsaiRepository repository) {
+  public BonsaiDTOService(ApplicationContext context,
+      BonsaiRepository repository, PicRepository picRepository) {
     this.context = context;
     this.repository = repository;
+    this.picRepository = picRepository;
   }
 
   @Override
@@ -43,7 +52,7 @@ public class BonsaiDTOService implements IBonsaiDTOService {
   @Override
   public Optional<BonsaiDTO> findById(Integer id) {
     Optional<Bonsai> bonsai = repository.findById(id);
-    return bonsai.map(this::convertToBonsaiDTO);
+    return bonsai.map(b -> convertToBonsaiDTO(b, true));
   }
 
   @Override
@@ -59,8 +68,23 @@ public class BonsaiDTOService implements IBonsaiDTOService {
   }
 
   public BonsaiDTO convertToBonsaiDTO(Bonsai bonsai) {
+    return convertToBonsaiDTO(bonsai, false);
+  }
+
+  public BonsaiDTO convertToBonsaiDTO(Bonsai bonsai, boolean withPics) {
     IBonsaiMapperImpl iBonsaiMapper = new IBonsaiMapperImpl();
-    return iBonsaiMapper.bonsaiToBonsaiDTO(bonsai);
+    BonsaiDTO bonsaiDTO = iBonsaiMapper.bonsaiToBonsaiDTO(bonsai);
+    if (withPics) {
+      ArrayList<Order> sortBy = new ArrayList<>();
+      sortBy.add(new Sort.Order(Sort.Direction.ASC, "id"));
+      Sort sortFinal = Sort.by(sortBy);
+
+      Pageable paging = PageRequest.of(0, 1, sortFinal);
+
+      Page<Pic> pics = picRepository.findByEntityTypeAndEntityId("bonsai", bonsai.getId(), paging);
+      bonsaiDTO.setPics(pics);
+    }
+    return bonsaiDTO;
   }
 
 }

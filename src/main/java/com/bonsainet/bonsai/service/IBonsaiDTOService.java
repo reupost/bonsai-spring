@@ -21,4 +21,6 @@ public interface IBonsaiDTOService {
   Long count();
 
   BonsaiDTO convertToBonsaiDTO(Bonsai bonsai);
+
+  BonsaiDTO convertToBonsaiDTO(Bonsai bonsai, boolean withPics);
 }
