@@ -1,6 +1,8 @@
 package com.bonsainet.bonsai.controller;
 
+import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.Pic;
+import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.service.IPicService;
 
 import java.io.IOException;
@@ -56,8 +58,9 @@ public class PicController {
   ) {
 
     List<String> toExclude = new ArrayList<>();
+    String mainClass = TaxonDTO.class.getName();
     Pageable paging = GeneralControllerHelper.getPageableFromRequest(sort, dir, page, size,
-        "com.bonsainet.bonsai.model.Pic", toExclude, Optional.empty(), Optional.empty(), Optional.of("id"));
+        mainClass, toExclude, Optional.empty(), Optional.empty(), Optional.of("id"));
 
     Page<Pic> picResults;
 

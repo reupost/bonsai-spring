@@ -1,6 +1,8 @@
 package com.bonsainet.bonsai.controller;
 
 import com.bonsainet.bonsai.model.Bonsai;
+import com.bonsainet.bonsai.model.BonsaiDTO;
+import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.service.IBonsaiService;
 
 import java.util.Collections;
@@ -41,9 +43,11 @@ public class BonsaiController {
       @RequestParam(defaultValue = "10") int size
   ) {
     List<String> toExclude = Collections.singletonList("taxonDTO");
+    String mainClass = BonsaiDTO.class.getName();
+    String childClass = TaxonDTO.class.getName();
     Pageable paging = GeneralControllerHelper.getPageableFromRequest(sort, dir, page, size,
-        "com.bonsainet.bonsai.model.BonsaiDTO", toExclude,
-        Optional.of("com.bonsainet.bonsai.model.TaxonDTO"), Optional.of("taxon"), Optional.of("tag"));
+        mainClass, toExclude,
+        Optional.of(childClass), Optional.of("taxon"), Optional.of("tag"));
 
     Page<Bonsai> bonsaiResults;
     if (filter == null || filter.length() == 0) {

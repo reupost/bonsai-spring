@@ -1,7 +1,9 @@
 package com.bonsainet.bonsai.controller;
 
+import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.Taxon;
 
+import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.service.ITaxonService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,8 +54,9 @@ public class TaxonController {
   ) {
 
     List<String> toExclude = new ArrayList<>();
+    String mainClass = TaxonDTO.class.getName();
     Pageable paging = GeneralControllerHelper.getPageableFromRequest(sort, dir, page, size,
-        "com.bonsainet.bonsai.model.TaxonDTO", toExclude, Optional.empty(), Optional.empty(), Optional.of("fullName"));
+        mainClass, toExclude, Optional.empty(), Optional.empty(), Optional.of("fullName"));
 
     Page<Taxon> taxaResults;
     if (filter == null) {
