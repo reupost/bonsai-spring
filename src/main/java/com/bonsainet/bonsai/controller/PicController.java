@@ -6,29 +6,21 @@ import com.bonsainet.bonsai.service.IPicService;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static java.lang.Thread.sleep;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -63,43 +55,9 @@ public class PicController {
       @RequestParam(defaultValue = "10") int size
   ) {
 
-    String[] picFieldNames = Stream.of(Pic.class.getDeclaredFields())
-        .map(Field::getName)
-        .toArray(String[]::new);
-
-    ArrayList<Sort.Order> sortBy = new ArrayList<>();
-    if (sort != null) {
-      for (int i = 0; i < sort.size(); i++) {
-        String sortItem = sort.get(i);
-        Sort.Direction sortDir = Sort.Direction.ASC;
-        if (dir != null) {
-          if (dir.size() > i) {
-            if (dir.get(i).equalsIgnoreCase("DESC")) {
-              sortDir = Sort.Direction.DESC;
-            }
-          }
-        }
-        List<String> f = Arrays.stream(picFieldNames)
-            .filter(fieldName -> fieldName.equalsIgnoreCase(sortItem))
-            .collect(Collectors.toList());
-        if (!f.isEmpty()) {
-          sortBy.add(new Sort.Order(sortDir, f.get(0)));
-        }
-      }
-    }
-    sortBy.add(new Sort.Order(Sort.Direction.ASC, "id"));
-
-    Sort sortFinal = Sort.by(sortBy);
-    if (size < 1) {
-      size = 1;
-    }
-    if (size > 100) {
-      size = 100;
-    }
-    if (page < 0) {
-      page = 0;
-    }
-    Pageable paging = PageRequest.of(page, size, sortFinal);
+    List<String> toExclude = new ArrayList<>();
+    Pageable paging = GeneralControllerHelper.getPageableFromRequest(sort, dir, page, size,
+        "com.bonsainet.bonsai.model.Pic", toExclude, Optional.empty(), Optional.empty(), Optional.of("id"));
 
     Page<Pic> picResults;
 
