@@ -68,7 +68,7 @@ public class BonsaiDTOService implements IBonsaiDTOService {
   }
 
   public BonsaiDTO convertToBonsaiDTO(Bonsai bonsai) {
-    return convertToBonsaiDTO(bonsai, false);
+    return convertToBonsaiDTO(bonsai, true);
   }
 
   public BonsaiDTO convertToBonsaiDTO(Bonsai bonsai, boolean withPics) {
@@ -76,13 +76,15 @@ public class BonsaiDTOService implements IBonsaiDTOService {
     BonsaiDTO bonsaiDTO = iBonsaiMapper.bonsaiToBonsaiDTO(bonsai);
     if (withPics) {
       ArrayList<Order> sortBy = new ArrayList<>();
-      sortBy.add(new Sort.Order(Sort.Direction.ASC, "id"));
+      sortBy.add(new Sort.Order(Sort.Direction.DESC, "id"));
       Sort sortFinal = Sort.by(sortBy);
 
       Pageable paging = PageRequest.of(0, 1, sortFinal);
 
       Page<Pic> pics = picRepository.findByEntityTypeAndEntityId("bonsai", bonsai.getId(), paging);
-      bonsaiDTO.setPics(pics);
+      if (pics.hasContent()) {
+        bonsaiDTO.setPics(pics);
+      }
     }
     return bonsaiDTO;
   }

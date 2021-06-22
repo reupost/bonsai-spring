@@ -15,6 +15,7 @@ import java.nio.file.attribute.AclFileAttributeView;
 import java.nio.file.attribute.UserPrincipal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.persistence.Entity;
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.imgscalr.Scalr;
@@ -35,6 +37,7 @@ import org.imgscalr.Scalr;
 @Entity
 @Table(name = "pic")
 @Data
+@Slf4j
 public class Pic {
   @Transient
   public static final Integer THUMB_DIM = 200;
@@ -145,7 +148,8 @@ public class Pic {
 
   @JsonIgnore
   public byte[] getImageThumb() throws IOException {
-    File file = new File(this.rootFolder + File.separatorChar + THUMB_DIR, this.fileNameThumb);
+    File file = new File(Objects.toString(this.rootFolder,"") + File.separatorChar + THUMB_DIR,
+        Objects.toString(this.fileNameThumb, ""));
     byte[] fileContent;
     fileContent = FileUtils.readFileToByteArray(file);
 

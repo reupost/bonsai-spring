@@ -143,13 +143,24 @@ public class PicController {
       value = "/thumb",
       produces = MediaType.IMAGE_JPEG_VALUE
   )
-  public @ResponseBody byte[] getImageThumb(@RequestParam(required = true) Integer id)
-      throws IOException {
+  public @ResponseBody byte[] getImageThumb(@RequestParam(required = true) Integer id) {
     Optional<Pic> p = picService.findById(id);
     if (p.isPresent()) {
       // TODO: how do we check if the thumbnail is ready?
       //  Could set it to a default 'preparing...' image until its set properly
-      return p.get().getImageThumb();
+      try {
+        byte[] thumbImg = p.get().getImageThumb();
+        return thumbImg;
+      } catch (IOException ioe) {
+        try {
+          Future<Pic> picSaved = picService.save(p.get());
+          Pic pp = picSaved.get();
+          return pp.getImageThumb();
+        } catch (Exception e) {
+          e.printStackTrace();
+          return null;
+        }
+      }
     } else {
       return null;
     }
