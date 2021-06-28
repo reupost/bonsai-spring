@@ -51,6 +51,7 @@ public class Pic {
   private String entityType; //TODO refactor into enum
   private Integer entityId;
   private String title;
+  private String view; //TODO front, left, right, back - enum?
   private Date dateTaken;
   private String rootFolder;
   private String fileName;

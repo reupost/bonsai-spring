@@ -1,17 +1,25 @@
 package com.bonsainet.bonsai.controller;
 
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+
 import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.service.IPicService;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,6 +31,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -166,8 +175,24 @@ public class PicController {
     }
   }
 
+  //TODO sort out updates vs new
   @PutMapping(path = "/pic")
-  public Pic setPic(@Valid @RequestBody Pic p) {
+  //@RequestMapping(path = "/pic", method = PUT, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+  public Pic setPic(@Valid @RequestParam("p") String ps,
+      @Valid @NotNull @NotBlank @RequestParam("file") MultipartFile file) {
+    String fileName = picService.storeFile(file);
+
+    ObjectMapper objectWriter = new ObjectMapper();
+
+    Pic p = null;
+    try {
+      p = objectWriter.readValue(ps, Pic.class);
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return null;
+    }
+    assert p != null;
+    p.setFileName(fileName);
     Future<Pic> futurePic = null;
     try {
       futurePic = picService.save(p);
@@ -178,7 +203,13 @@ public class PicController {
     return null;
   }
 
-  @DeleteMapping(path = "/pics/del/{id}")
+  @PutMapping(path = "/picfile")
+  public String setPic(@RequestParam("file") MultipartFile file) {
+    String fileName = picService.storeFile(file);
+    return fileName;
+  }
+
+  @DeleteMapping(path = "/del/{id}")
   public ResponseEntity<Long> deletePic(@PathVariable Integer id) {
     Optional<Pic> t = picService.findById(id);
     if (t.isPresent()) {
