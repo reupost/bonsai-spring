@@ -1,14 +1,10 @@
 package com.bonsainet.bonsai.controller;
 
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
-
-import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.service.IPicService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -19,7 +15,6 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
