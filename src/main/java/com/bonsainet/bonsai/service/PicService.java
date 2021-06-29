@@ -62,16 +62,28 @@ public class PicService implements IPicService {
   public Future<Pic> save(Pic p) throws InterruptedException, IllegalArgumentException {
     CompletableFuture<Pic> completableFuture = new CompletableFuture<>();
 
-    if (StringUtils.isEmpty(p.getFileName())) throw new IllegalArgumentException("Filename is required");
-    if (StringUtils.isEmpty(p.getEntityType())) throw new IllegalArgumentException("Entity type is required");
-    if (StringUtils.isEmpty(p.getEntityId())) throw new IllegalArgumentException("Entity Id is required");
+    if (p.getId() != null) {
+      Optional<Pic> oldPic = findById(p.getId());
+      if (oldPic.isPresent()) {
+        try {
+          //fill in old values for any nulls in entity to save
+          p.supplementWith(oldPic.get());
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    final Pic picToSave = p;
+    if (StringUtils.isEmpty(picToSave.getFileName())) throw new IllegalArgumentException("Filename is required");
+    if (StringUtils.isEmpty(picToSave.getEntityType())) throw new IllegalArgumentException("Entity type is required");
+    if (StringUtils.isEmpty(picToSave.getEntityId())) throw new IllegalArgumentException("Entity Id is required");
 
     try {
-      if (StringUtils.isEmpty(p.getRootFolder())) p.setRootFolder(this.picRootFolder);
-      p.setDimensions();
+      if (StringUtils.isEmpty(picToSave.getRootFolder())) picToSave.setRootFolder(this.picRootFolder);
+      picToSave.setDimensions();
       Executors.newCachedThreadPool().submit(() -> {
-        p.setThumb();
-        Pic pSaved = repository.save(p);
+        picToSave.setThumb();
+        Pic pSaved = repository.save(picToSave);
         completableFuture.complete(pSaved);
       });
     } catch (NullPointerException npe) {
@@ -127,6 +139,7 @@ public class PicService implements IPicService {
 
   @Override
   public void delete(Pic p) {
+    p.deleteImageIfExists();
     repository.delete(p);
   }
 

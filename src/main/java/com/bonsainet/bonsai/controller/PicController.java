@@ -170,12 +170,9 @@ public class PicController {
     }
   }
 
-  //TODO sort out updates vs new
   @PutMapping(path = "/pic")
-  //@RequestMapping(path = "/pic", method = PUT, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
   public Pic setPic(@Valid @RequestParam("p") String ps,
-      @Valid @NotNull @NotBlank @RequestParam("file") MultipartFile file) {
-    String fileName = picService.storeFile(file);
+      @Valid @NotBlank @NotNull @RequestParam("file") Optional<MultipartFile> file) {
 
     ObjectMapper objectWriter = new ObjectMapper();
 
@@ -187,21 +184,24 @@ public class PicController {
       return null;
     }
     assert p != null;
-    p.setFileName(fileName);
-    Future<Pic> futurePic = null;
+    if (file.isPresent()) {
+      String fileName = picService.storeFile(file.get());
+      if (p.getId() != null) {
+        Optional<Pic> oldPic = picService.findById(p.getId());
+        if (oldPic.isPresent()) {
+          oldPic.get().deleteImageIfExists();
+        }
+      }
+      p.setFileName(fileName);
+    }
+
     try {
-      futurePic = picService.save(p);
+      Future<Pic> futurePic = picService.save(p);
       return futurePic.get();
     } catch (InterruptedException | ExecutionException ie) {
       ie.printStackTrace();
     }
     return null;
-  }
-
-  @PutMapping(path = "/picfile")
-  public String setPic(@RequestParam("file") MultipartFile file) {
-    String fileName = picService.storeFile(file);
-    return fileName;
   }
 
   @DeleteMapping(path = "/del/{id}")

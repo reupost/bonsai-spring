@@ -5,6 +5,8 @@ import com.google.common.hash.Hashing;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -157,6 +159,15 @@ public class Pic {
     return fileContent;
   }
 
+  @JsonIgnore
+  public void deleteImageIfExists() {
+    File file = new File(Objects.toString(this.rootFolder,"") + File.separatorChar + THUMB_DIR,
+          Objects.toString(this.fileNameThumb, ""));
+    file.delete();
+    file = new File(Objects.toString(this.rootFolder,""), Objects.toString(this.fileName, ""));
+    file.delete();
+  }
+
   private void setFolderPermission(Path path, boolean writeable) {
     File folder = new File(String.valueOf(path));
     boolean success = folder.setWritable(false, false);
@@ -189,6 +200,36 @@ public class Pic {
         view.setAcl(acls);
       } catch (IOException ioe) {
         ioe.printStackTrace();
+      }
+    }
+  }
+
+  /**
+   * @param fromPic object to fill-in values from
+   * @throws IllegalAccessException
+   * @throws InstantiationException
+   */
+  public void supplementWith(Pic fromPic)
+      throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+    Class<? extends Pic> clazz = fromPic.getClass();
+
+    for (Field field : clazz.getDeclaredFields()) {
+
+      field.setAccessible(true);
+      Object myValue = field.get(this);
+      Object fromValue = field.get(fromPic);
+
+      char first = Character.toUpperCase(field.getName().charAt(0));
+      String capitalized = first + field.getName().substring(1);
+      try {
+        //is this a gettable property? If not, skip (via exception that is thrown)
+        clazz.getDeclaredMethod("get" + capitalized);
+
+        if (fromValue != null) {
+          field.set(this, (myValue != null) ? myValue : fromValue);
+        }
+      } catch (NoSuchMethodException | SecurityException e) {
+        //ignore and continue with next field
       }
     }
   }
