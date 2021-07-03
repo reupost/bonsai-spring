@@ -42,13 +42,15 @@ class PicServiceTest {
 
     @Test
     void shouldThrowExceptionWhenSavePicIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> picService.save(null));
+        assertThrows(NullPointerException.class, () -> picService.save(null));
     }
 
     @Test
     void shouldSavePic() {
         Pic pic = new Pic();
         pic.setId(1);
+        pic.setEntityId(1);
+        pic.setEntityType("bonsai");
         final int imgWidth = 100;
         final int imgHeight = 150;
         BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
@@ -74,6 +76,7 @@ class PicServiceTest {
         }
 
         verify(picRepository).save(pic);
+        verify(picRepository).findById(pic.getId());
 
         verifyNoMoreInteractions(picRepository);
     }

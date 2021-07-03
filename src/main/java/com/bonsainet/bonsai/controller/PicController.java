@@ -50,7 +50,9 @@ public class PicController {
     return picService.findAll();
   }
 
-  @GetMapping("/pics_page")
+  @GetMapping(
+      value = "/pics_page",
+      produces = MediaType.APPLICATION_JSON_VALUE)
   public Page<Pic> findPicsForPage(
       @RequestParam(required = false) String entityType,
       @RequestParam(required = false) Integer entityId,

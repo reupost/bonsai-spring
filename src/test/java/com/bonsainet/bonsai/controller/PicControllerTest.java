@@ -2,6 +2,7 @@ package com.bonsainet.bonsai.controller;
 
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.service.PicService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.imageio.ImageIO;
@@ -196,11 +200,11 @@ public class PicControllerTest {
             Pic pic = new Pic();
             pic.setEntityId(i);
             pic.setId(1-i);
+            pic.setEntityType("bonsai");
             picList.add(pic);
         }
 
         ArrayList<Sort.Order> sortBy = new ArrayList<>();
-        sortBy.add(new Sort.Order(Sort.Direction.ASC, "entityId"));
         sortBy.add(new Sort.Order(Sort.Direction.ASC, "id"));
         Sort sortFinal = Sort.by(sortBy);
 
@@ -210,7 +214,9 @@ public class PicControllerTest {
         Pageable paging = PageRequest.of(passedPage, picList.size(), sortFinal);
         when(picService.findAll(paging)).thenReturn(pagePic);
 
-        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage + "&size=" + picList.size() + "&sort=entityId&dir=asc"))
+        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage +
+            "&size=" + picList.size() +
+            "&sort=entityId&dir=asc"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.content", hasSize(picList.size())))
@@ -229,12 +235,12 @@ public class PicControllerTest {
         for (int i = 0; i < 2; i++) {
             Pic pic = new Pic();
             pic.setEntityId(1-i);
+            pic.setEntityType("bonsai");
             pic.setId(i);
             picList.add(pic);
         }
 
         ArrayList<Sort.Order> sortBy = new ArrayList<>();
-        sortBy.add(new Sort.Order(Sort.Direction.DESC, "entityId"));
         sortBy.add(new Sort.Order(Sort.Direction.ASC, "id"));
         Sort sortFinal = Sort.by(sortBy);
 
@@ -430,6 +436,8 @@ public class PicControllerTest {
 
         Pic pic = new Pic();
         pic.setId(picId);
+        pic.setEntityType("bonsai");
+        pic.setEntityId(picId);
 
         CompletableFuture<Pic> completableFuture = new CompletableFuture<>();
         Executors.newCachedThreadPool().submit(() -> {
@@ -437,9 +445,12 @@ public class PicControllerTest {
         });
         when(picService.save(pic)).thenReturn(completableFuture);
 
-        this.mockMvc.perform(put("/pic/pic")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(pic)))
+        String jsonPic = new ObjectMapper().writeValueAsString(pic);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/pic/pic");
+        request.contentType(MediaType.APPLICATION_FORM_URLENCODED);
+        request.param("p", jsonPic);
+        ResultActions resultActions = this.mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id", is(picId)));
@@ -457,7 +468,7 @@ public class PicControllerTest {
 
         when(picService.findById(picId)).thenReturn(Optional.of(pic));
 
-        this.mockMvc.perform(delete("/pic/pics/del/1"))
+        this.mockMvc.perform(delete("/pic/del/1"))
                 .andExpect(status().isOk());
 
         verify(picService).findById(picId);
@@ -474,7 +485,7 @@ public class PicControllerTest {
 
         when(picService.findById(picId)).thenReturn(Optional.empty());
 
-        this.mockMvc.perform(delete("/pic/pics/del/1"))
+        this.mockMvc.perform(delete("/pic/del/1"))
                 .andExpect(status().isNotFound());
 
         verify(picService).findById(picId);

@@ -82,7 +82,7 @@ public class BonsaiDTOService implements IBonsaiDTOService {
       Pageable paging = PageRequest.of(0, 1, sortFinal);
 
       Page<Pic> pics = picRepository.findByEntityTypeAndEntityId("bonsai", bonsai.getId(), paging);
-      if (pics.hasContent()) {
+      if (pics != null && pics.hasContent()) {
         bonsaiDTO.setPics(pics);
       }
     }
