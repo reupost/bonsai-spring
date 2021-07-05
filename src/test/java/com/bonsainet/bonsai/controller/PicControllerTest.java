@@ -3,8 +3,12 @@ package com.bonsainet.bonsai.controller;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.service.PicService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.concurrent.Future;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -523,5 +527,88 @@ public class PicControllerTest {
 
         verify(picService).findById(picId);
         verifyNoMoreInteractions(picService);
+    }
+
+    @Test
+    public void getImageNotFoundTest() {
+        int picId = 1;
+
+        Pic pic = new Pic();
+        pic.setId(picId);
+
+        when(picService.findById(picId)).thenReturn(Optional.empty());
+
+        try {
+            this.mockMvc.perform(get("/pic/image?id=" + picId))
+                .andExpect(status().isNotFound());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        verify(picService).findById(picId);
+        verifyNoMoreInteractions(picService);
+    }
+
+    @Test
+    public void getImageThumbTest() {
+        int picId = 1;
+        Pic picMock = mock(Pic.class);
+        picMock.setId(picId);
+
+        final int imgWidth = 100;
+        final int imgHeight = 150;
+        byte[] bytes;
+        BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImage, "jpg", baos);
+            bytes = baos.toByteArray();
+            when(picService.findById(picId)).thenReturn(Optional.of(picMock));
+            when(picMock.getImageThumb()).thenReturn(bytes);
+            this.mockMvc.perform(get("/pic/thumb?id=" + picId));
+            verify(picService).findById(picId);
+            verifyNoMoreInteractions(picService);
+            verify(picMock).getImageThumb();
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert false;
+        }
+    }
+
+
+    @Test
+    public void getImageThumbNotSavedTest() {
+        int picId = 1;
+        Pic picMock = mock(Pic.class);
+
+        Future<Pic> picFuture = mock(Future.class);
+
+        picMock.setId(picId);
+
+        final int imgWidth = 100;
+        final int imgHeight = 150;
+        byte[] bytes;
+        BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImage, "jpg", baos);
+            bytes = baos.toByteArray();
+            when(picService.findById(picId)).thenReturn(Optional.of(picMock));
+            when(picService.save(picMock)).thenReturn(picFuture);
+            when(picFuture.get()).thenReturn(picMock);
+            when(picMock.getImageThumb())
+                .thenThrow(IOException.class)
+                .thenReturn(bytes);
+            this.mockMvc.perform(get("/pic/thumb?id=" + picId));
+            verify(picService).findById(picId);
+            verify(picService).save(picMock);
+            verifyNoMoreInteractions(picService);
+            verify(picMock, times(2)).getImageThumb();
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert false;
+        }
     }
 }

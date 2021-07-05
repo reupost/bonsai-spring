@@ -105,13 +105,13 @@ public class PicController {
       value = "/image",
       produces = MediaType.IMAGE_JPEG_VALUE
   )
-  public @ResponseBody byte[] getImage(@RequestParam(required = true) Integer id)
+  public ResponseEntity<byte[]> getImage(@RequestParam(required = true) Integer id)
       throws IOException {
     Optional<Pic> p = picService.findById(id);
     if (p.isPresent()) {
-      return p.get().getImage();
+      return new ResponseEntity<>(p.get().getImage(), HttpStatus.OK);
     } else {
-      return null;
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
   }
 
@@ -120,7 +120,7 @@ public class PicController {
       value = "/update",
       produces = MediaType.IMAGE_JPEG_VALUE
   )
-  public @ResponseBody byte[] updateImage(@RequestParam(required = true) Integer id)
+  public ResponseEntity<byte[]> updateImage(@RequestParam(required = true) Integer id)
       throws IOException {
     Optional<Pic> p = picService.findById(id);
     Future<Pic> futureSave = null;
@@ -131,17 +131,9 @@ public class PicController {
       } catch (InterruptedException ie) {
         ie.printStackTrace();
       }
-      // this is needed if we want the thumb via getImageThumb(), since it might not be generated yet,
-      // but the full image will definitely be there already in the filesystem.
-//      try {
-//        pSaved = futureSave.get();
-//      } catch (InterruptedException | ExecutionException e) {
-//
-//      }
-//      return pSaved.getImageThumb();
-      return p.get().getImage();
+      return new ResponseEntity<>(p.get().getImage(), HttpStatus.OK);
     } else {
-      return null;
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
   }
 
@@ -149,31 +141,31 @@ public class PicController {
       value = "/thumb",
       produces = MediaType.IMAGE_JPEG_VALUE
   )
-  public @ResponseBody byte[] getImageThumb(@RequestParam(required = true) Integer id) {
+  public ResponseEntity<byte[]> getImageThumb(@RequestParam(required = true) Integer id) {
     Optional<Pic> p = picService.findById(id);
     if (p.isPresent()) {
       // TODO: how do we check if the thumbnail is ready?
       //  Could set it to a default 'preparing...' image until its set properly
       try {
         byte[] thumbImg = p.get().getImageThumb();
-        return thumbImg;
+        return new ResponseEntity<>(thumbImg, HttpStatus.OK);
       } catch (IOException ioe) {
         try {
           Future<Pic> picSaved = picService.save(p.get());
           Pic pp = picSaved.get();
-          return pp.getImageThumb();
+          return new ResponseEntity<>(pp.getImageThumb(), HttpStatus.OK);
         } catch (Exception e) {
           e.printStackTrace();
-          return null;
+          return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
       }
     } else {
-      return null;
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
   }
 
   @PutMapping(path = "/pic")
-  public Pic setPic(@Valid @RequestParam("p") String ps,
+  public ResponseEntity<Pic> setPic(@Valid @RequestParam("p") String ps,
       @Valid @NotBlank @NotNull @RequestParam("file") Optional<MultipartFile> file) {
 
     ObjectMapper objectWriter = new ObjectMapper();
@@ -183,7 +175,7 @@ public class PicController {
       p = objectWriter.readValue(ps, Pic.class);
     } catch (JsonProcessingException e) {
       e.printStackTrace();
-      return null;
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
     assert p != null;
     if (file.isPresent()) {
@@ -199,11 +191,11 @@ public class PicController {
 
     try {
       Future<Pic> futurePic = picService.save(p);
-      return futurePic.get();
+      return new ResponseEntity<>(futurePic.get(), HttpStatus.OK);
     } catch (InterruptedException | ExecutionException ie) {
       ie.printStackTrace();
     }
-    return null;
+    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @DeleteMapping(path = "/del/{id}")
