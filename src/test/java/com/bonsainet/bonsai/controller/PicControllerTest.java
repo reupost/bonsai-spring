@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.imageio.ImageIO;
@@ -31,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
-import org.springframework.web.multipart.MultipartFile;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
@@ -453,7 +451,7 @@ public class PicControllerTest {
 
         String jsonPic = new ObjectMapper().writeValueAsString(pic);
 
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/pic/pic");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/pic/pic");
         request.contentType(MediaType.APPLICATION_FORM_URLENCODED);
         request.param("p", jsonPic);
         ResultActions resultActions = this.mockMvc.perform(request)
