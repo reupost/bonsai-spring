@@ -5,21 +5,23 @@ import com.bonsainet.bonsai.service.PicService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.imageio.ImageIO;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
+import org.springframework.web.multipart.MultipartFile;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
@@ -50,6 +53,9 @@ public class PicControllerTest {
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
+
+    private final int imgWidth = 100;
+    private final int imgHeight = 150;
 
     @BeforeEach
     void setup() {
@@ -459,6 +465,56 @@ public class PicControllerTest {
         verifyNoMoreInteractions(picService);
     }
 
+    //TODO another rather complicated test to refactor
+    @Test
+    void saveNewPicWithFileTest() throws Exception {
+        int picId = 1;
+        String savedFileName = "savedFile.jpg";
+
+        Pic pic = new Pic();
+        pic.setId(picId);
+        pic.setEntityType("bonsai");
+        pic.setEntityId(picId);
+
+        Pic picSaved = new Pic();
+        picSaved.setId(picId);
+        picSaved.setEntityType("bonsai");
+        picSaved.setEntityId(picId);
+        picSaved.setFileName(savedFileName);
+
+        MockMultipartFile file = new MockMultipartFile("file",
+            "fileThatDoesNotExists.jpg",
+            "text/plain",
+            "This is dummy content".getBytes(StandardCharsets.UTF_8));
+
+        CompletableFuture<Pic> completableFuture = new CompletableFuture<>();
+        Executors.newCachedThreadPool().submit(() -> {
+            completableFuture.complete(picSaved);
+        });
+        when(picService.save(any())).thenReturn(completableFuture);
+        when(picService.storeFile(file)).thenReturn(savedFileName);
+        when(picService.findById(picId)).thenReturn(Optional.empty());
+
+        String jsonPic = new ObjectMapper().writeValueAsString(pic);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+            .multipart("/pic/pic")
+            .file(file);
+        request.contentType(MediaType.APPLICATION_FORM_URLENCODED);
+        request.param("p", jsonPic);
+
+        ResultActions resultActions = this.mockMvc.perform(request)
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.id", is(picId)))
+            .andExpect(jsonPath("$.fileName", is(savedFileName)));
+
+        verify(picService).save(picSaved);
+        verify(picService).storeFile(file);
+        verify(picService).findById(picId);
+        verifyNoMoreInteractions(picService);
+    }
+
     @Test
     void deletePicTest() throws Exception {
         int picId = 1;
@@ -499,8 +555,6 @@ public class PicControllerTest {
         Pic pic = new Pic();
         pic.setId(picId);
 
-        final int imgWidth = 100;
-        final int imgHeight = 150;
         BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
 
         File file = null;
@@ -555,8 +609,6 @@ public class PicControllerTest {
         Pic picMock = mock(Pic.class);
         picMock.setId(picId);
 
-        final int imgWidth = 100;
-        final int imgHeight = 150;
         byte[] bytes;
         BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
 
@@ -577,6 +629,8 @@ public class PicControllerTest {
     }
 
 
+    //TODO this seems like a brittle test that cares too much about the inner workings of the function
+    //it's testing. Refactor to raise abstraction level.
     @Test
     public void getImageThumbNotSavedTest() {
         int picId = 1;
@@ -586,8 +640,6 @@ public class PicControllerTest {
 
         picMock.setId(picId);
 
-        final int imgWidth = 100;
-        final int imgHeight = 150;
         byte[] bytes;
         BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
 

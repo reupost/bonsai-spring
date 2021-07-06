@@ -164,12 +164,13 @@ public class PicController {
     }
   }
 
-  @PutMapping(path = "/pic")
+  @PostMapping(path = "/pic")
   public ResponseEntity<Pic> setPic(@Valid @RequestParam("p") String ps,
-      @Valid @NotBlank @NotNull @RequestParam("file") Optional<MultipartFile> file) {
+      @Valid @NotBlank @RequestParam("file") Optional<MultipartFile> file) {
 
     ObjectMapper objectWriter = new ObjectMapper();
 
+    //TODO: this should be automatable, surely?
     Pic p = null;
     try {
       p = objectWriter.readValue(ps, Pic.class);
