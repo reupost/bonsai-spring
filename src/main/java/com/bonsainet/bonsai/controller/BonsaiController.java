@@ -64,7 +64,7 @@ public class BonsaiController {
   }
 
   @PutMapping(path = "/bonsai")
-  public Bonsai setBonsai(@Valid @RequestBody Bonsai t) throws InterruptedException {
+  public Bonsai setBonsai(@Valid @RequestBody Bonsai t) {
     // sleep(1000);
     return bonsaiService.save(t);
   }

@@ -126,11 +126,7 @@ public class PicController {
     Future<Pic> futureSave = null;
     Pic pSaved = null;
     if (p.isPresent()) {
-      try {
-        futureSave = picService.save(p.get());
-      } catch (InterruptedException ie) {
-        ie.printStackTrace();
-      }
+      futureSave = picService.save(p.get());
       return new ResponseEntity<>(p.get().getImage(), HttpStatus.OK);
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);

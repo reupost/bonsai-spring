@@ -59,7 +59,7 @@ public class PicService implements IPicService {
   }
 
   @Override
-  public Future<Pic> save(Pic p) throws InterruptedException, IllegalArgumentException {
+  public Future<Pic> save(Pic p) throws IllegalArgumentException {
     CompletableFuture<Pic> completableFuture = new CompletableFuture<>();
 
     if (p.getId() != null) {

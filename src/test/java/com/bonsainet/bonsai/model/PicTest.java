@@ -8,13 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.*;
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
 import javax.imageio.ImageIO;
 
 import org.junit.Assert;
@@ -164,7 +160,7 @@ public class PicTest {
         "setDimYThumb", "setImageHash"};
     try {
       Class cls = Class.forName("com.bonsainet.bonsai.model.Pic");
-      Method m[] = cls.getMethods();
+      Method[] m = cls.getMethods();
       for(int i = 0; i < m.length; i++) {
         for (int j = 0; j < setMethodsShouldNotExist.length; j++) {
           Assertions.assertNotEquals(m[i].getName().toLowerCase(), setMethodsShouldNotExist[j].toLowerCase());
@@ -295,6 +291,43 @@ public class PicTest {
   }
 
   @Test
+  public void supplementWithTest() {
+    Pic pic = new Pic();
+    pic.setId(1);
+    pic.setEntityType("test");
+
+    Pic fromPic = new Pic();
+    fromPic.setEntityId(1);
+    fromPic.setId(2);
+    fromPic.setView("front");
+    File img = getTempImage(1, 1);
+    try {
+      fromPic.setRootFolder(img.getParentFile().getCanonicalPath());
+      fromPic.setFileName(img.getName());
+      fromPic.setThumb(); //sets thumbDimX and Y
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+      assert false;
+    }
+
+    try {
+      pic.supplementWith(fromPic);
+    } catch (IllegalAccessException iae) {
+      iae.printStackTrace();
+      assert false;
+    }
+    assertEquals(pic.getId(), 1); //not overwritten
+    assertEquals(pic.getEntityType(), "test"); //not replaced with null
+    assertEquals(pic.getFileName(), fromPic.getFileName()); //supplemented
+    assertEquals(pic.getEntityId(), fromPic.getEntityId()); //supplemented
+    assertEquals(pic.getView(), fromPic.getView()); //supplemented
+    assertNull(pic.getDateTaken()); //not set
+    assertEquals(pic.getDimXThumb(), fromPic.getDimXThumb()); //set even though not settable outside of class
+
+    removeTempImage(img, true);
+  }
+
+  @Test
   public void gettersSettersTest() {
     Pic pic = new Pic();
     Date dte = new Date();
@@ -306,6 +339,7 @@ public class PicTest {
     pic.setDateTaken(dte);
     pic.setRootFolder("folder");
     pic.setFileName("test.jpg");
+    pic.setView("front");
 
     assertEquals(pic.getId(), 1);
     assertEquals(pic.getEntityId(), 2);
@@ -314,5 +348,6 @@ public class PicTest {
     assertEquals(pic.getDateTaken(), dte);
     assertEquals(pic.getRootFolder(), "folder");
     assertEquals(pic.getFileName(), "test.jpg");
+    assertEquals(pic.getView(), "front");
   }
 }

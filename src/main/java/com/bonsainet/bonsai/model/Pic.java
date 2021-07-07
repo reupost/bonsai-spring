@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -207,15 +206,15 @@ public class Pic {
   /**
    * @param fromPic object to fill-in values from
    * @throws IllegalAccessException
-   * @throws InstantiationException
+   *
+   * Note that if a new filename is set, this is not used to generate a new thumbnail or dimensions -
+   * these must be set explicitly from the fromPic object.
    */
-  public void supplementWith(Pic fromPic)
-      throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+  public void supplementWith(Pic fromPic) throws IllegalAccessException {
     Class<? extends Pic> clazz = fromPic.getClass();
 
     for (Field field : clazz.getDeclaredFields()) {
 
-      field.setAccessible(true);
       Object myValue = field.get(this);
       Object fromValue = field.get(fromPic);
 

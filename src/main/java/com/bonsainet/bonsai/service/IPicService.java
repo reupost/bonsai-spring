@@ -15,7 +15,7 @@ public interface IPicService {
 
   Page<Pic> findAll(Pageable pageable);
 
-  Future<Pic> save(Pic p) throws InterruptedException;
+  Future<Pic> save(Pic p);
 
   void delete(Pic p);
 
