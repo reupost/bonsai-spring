@@ -1,5 +1,6 @@
 package com.bonsainet.bonsai.controller;
 
+import com.bonsainet.bonsai.model.EntityTypes;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.service.IPicService;
@@ -54,7 +55,7 @@ public class PicController {
       value = "/pics_page",
       produces = MediaType.APPLICATION_JSON_VALUE)
   public Page<Pic> findPicsForPage(
-      @RequestParam(required = false) String entityType,
+      @RequestParam(required = false) EntityTypes entityType,
       @RequestParam(required = false) Integer entityId,
       @RequestParam(required = false) String filter,
       @RequestParam(required = false) List<String> sort,
@@ -71,7 +72,7 @@ public class PicController {
     Page<Pic> picResults;
 
     // this feels very clumsy
-    if (entityType == null || entityType.length() == 0) {
+    if (entityType == null) {
       if (filter == null || filter.length() == 0) {
         picResults = picService.findAll(paging);
       } else {

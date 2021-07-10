@@ -20,6 +20,8 @@ import java.util.Objects;
 import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -49,10 +51,16 @@ public class Pic {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  private String entityType; //TODO refactor into enum
+  @Enumerated(EnumType.STRING)
+  private EntityTypes entityType;
+
   private Integer entityId;
+
   private String title;
-  private String view; //TODO front, left, right, back - enum?
+
+  @Enumerated(EnumType.STRING)
+  private ViewAngles view;
+
   private Date dateTaken;
   private String rootFolder;
   private String fileName;

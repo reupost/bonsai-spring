@@ -294,12 +294,12 @@ public class PicTest {
   public void supplementWithTest() {
     Pic pic = new Pic();
     pic.setId(1);
-    pic.setEntityType("test");
+    pic.setEntityType(EntityTypes.BONSAI);
 
     Pic fromPic = new Pic();
     fromPic.setEntityId(1);
     fromPic.setId(2);
-    fromPic.setView("front");
+    fromPic.setView(ViewAngles.FRONT);
     File img = getTempImage(1, 1);
     try {
       fromPic.setRootFolder(img.getParentFile().getCanonicalPath());
@@ -317,7 +317,7 @@ public class PicTest {
       assert false;
     }
     assertEquals(pic.getId(), 1); //not overwritten
-    assertEquals(pic.getEntityType(), "test"); //not replaced with null
+    assertEquals(pic.getEntityType(), EntityTypes.BONSAI); //not replaced with null
     assertEquals(pic.getFileName(), fromPic.getFileName()); //supplemented
     assertEquals(pic.getEntityId(), fromPic.getEntityId()); //supplemented
     assertEquals(pic.getView(), fromPic.getView()); //supplemented
@@ -333,21 +333,21 @@ public class PicTest {
     Date dte = new Date();
 
     pic.setId(1);
-    pic.setEntityType("test");
+    pic.setEntityType(EntityTypes.BONSAI);
     pic.setEntityId(2);
     pic.setTitle("test title");
     pic.setDateTaken(dte);
     pic.setRootFolder("folder");
     pic.setFileName("test.jpg");
-    pic.setView("front");
+    pic.setView(ViewAngles.FRONT);
 
     assertEquals(pic.getId(), 1);
     assertEquals(pic.getEntityId(), 2);
-    assertEquals(pic.getEntityType(), "test");
+    assertEquals(pic.getEntityType(), EntityTypes.BONSAI);
     assertEquals(pic.getTitle(), "test title");
     assertEquals(pic.getDateTaken(), dte);
     assertEquals(pic.getRootFolder(), "folder");
     assertEquals(pic.getFileName(), "test.jpg");
-    assertEquals(pic.getView(), "front");
+    assertEquals(pic.getView(), ViewAngles.FRONT);
   }
 }

@@ -1,5 +1,6 @@
 package com.bonsainet.bonsai.controller;
 
+import com.bonsainet.bonsai.model.EntityTypes;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.service.PicService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -204,7 +205,7 @@ public class PicControllerTest {
             Pic pic = new Pic();
             pic.setEntityId(i);
             pic.setId(1-i);
-            pic.setEntityType("bonsai");
+            pic.setEntityType(EntityTypes.BONSAI);
             picList.add(pic);
         }
 
@@ -239,7 +240,7 @@ public class PicControllerTest {
         for (int i = 0; i < 2; i++) {
             Pic pic = new Pic();
             pic.setEntityId(1-i);
-            pic.setEntityType("bonsai");
+            pic.setEntityType(EntityTypes.BONSAI);
             pic.setId(i);
             picList.add(pic);
         }
@@ -303,7 +304,7 @@ public class PicControllerTest {
         int passedSize = 1;
         int passedPage = 0;
         String passedFilter = "test";
-        String passedEntityType = "entity";
+        EntityTypes passedEntityType = EntityTypes.BONSAI;
 
         int picId = 1;
 
@@ -336,7 +337,7 @@ public class PicControllerTest {
     void findPicsForPageEntityTypeTest() throws Exception {
         int passedSize = 1;
         int passedPage = 0;
-        String passedEntityType = "entity";
+        EntityTypes passedEntityType = EntityTypes.BONSAI;
 
         int picId = 1;
 
@@ -370,7 +371,7 @@ public class PicControllerTest {
         int passedSize = 1;
         int passedPage = 0;
         int passedEntityId = 2;
-        String passedEntityType = "entity";
+        EntityTypes passedEntityType = EntityTypes.BONSAI;
 
         int picId = 1;
 
@@ -404,7 +405,7 @@ public class PicControllerTest {
         int passedSize = 1;
         int passedPage = 0;
         String passedFilter = "test";
-        String passedEntityType = "entity";
+        EntityTypes passedEntityType = EntityTypes.BONSAI;
         int passedEntityId = 2;
 
         int picId = 1;
@@ -440,7 +441,7 @@ public class PicControllerTest {
 
         Pic pic = new Pic();
         pic.setId(picId);
-        pic.setEntityType("bonsai");
+        pic.setEntityType(EntityTypes.BONSAI);
         pic.setEntityId(picId);
 
         CompletableFuture<Pic> completableFuture = new CompletableFuture<>();
@@ -471,12 +472,12 @@ public class PicControllerTest {
 
         Pic pic = new Pic();
         pic.setId(picId);
-        pic.setEntityType("bonsai");
+        pic.setEntityType(EntityTypes.BONSAI);
         pic.setEntityId(picId);
 
         Pic picSaved = new Pic();
         picSaved.setId(picId);
-        picSaved.setEntityType("bonsai");
+        picSaved.setEntityType(EntityTypes.BONSAI);
         picSaved.setEntityId(picId);
         picSaved.setFileName(savedFileName);
 
