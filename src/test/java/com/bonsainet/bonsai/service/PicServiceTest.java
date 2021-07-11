@@ -1,5 +1,7 @@
 package com.bonsainet.bonsai.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -9,25 +11,31 @@ import com.bonsainet.bonsai.model.EntityTypes;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.repository.PicRepository;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.mockito.Mockito.*;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.imageio.ImageIO;
-
-//TODO get application context
 //TODO: refactor test image creation and deletion into reusable class?
 
 class PicServiceTest {
+
+    private String tmpRootFolder = System.getProperty("java.io.tmpdir");
 
     private PicService picService;
     private ApplicationContext applicationContext;
@@ -39,6 +47,7 @@ class PicServiceTest {
         applicationContext = mock(ApplicationContext.class);
         picRepository = mock(PicRepository.class);
         picService = new PicService(applicationContext, picRepository);
+        ReflectionTestUtils.setField(picService, "picRootFolder", tmpRootFolder);
     }
 
     @Test
@@ -47,39 +56,26 @@ class PicServiceTest {
     }
 
     @Test
-    void shouldSavePic() {
-        Pic pic = new Pic();
-        pic.setId(1);
-        pic.setEntityId(1);
-        pic.setEntityType(EntityTypes.BONSAI);
-        final int imgWidth = 100;
-        final int imgHeight = 150;
-        BufferedImage bufferedImage = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_3BYTE_BGR);
+    void shouldSavePic() throws IllegalAccessException {
+        Pic picMock = mock(Pic.class);
+        when(picMock.getId()).thenReturn(1);
+        when(picMock.getFileName()).thenReturn("test.jpg");
+        when(picMock.getEntityId()).thenReturn(1);
+        when(picMock.getEntityType()).thenReturn(EntityTypes.BONSAI);
 
-        File file = null;
+        when(picService.findById(picMock.getId())).thenReturn(Optional.of(picMock));
+
         try {
-            file = File.createTempFile("tmp", ".jpg");
-            ImageIO.write(bufferedImage, "jpg", file);
-
-            pic.setRootFolder(file.getParentFile().getCanonicalPath());
-            pic.setFileName(file.getName());
-
-            Future<Pic> picFuture = picService.save(pic);
-
+            Future<Pic> picFuture = picService.save(picMock);
             picFuture.get(); //wait
-
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (file.isFile() && !file.delete()) {
-                // failed to delete the (existing) file
-            }
         }
 
-        verify(picRepository).save(pic);
-        verify(picRepository).findById(pic.getId());
-
+        verify(picRepository).save(picMock);
+        verify(picRepository).findById(picMock.getId());
         verifyNoMoreInteractions(picRepository);
+        verify(picMock).supplementWith(picMock);
     }
 
     @Test
@@ -199,5 +195,30 @@ class PicServiceTest {
 
         verify(picRepository).findByTitleContaining( "title", paging);
         verifyNoMoreInteractions(picRepository);
+    }
+
+    @Test
+    void storeFileTest() {
+        String fileExtension = ".jpg";
+        MockMultipartFile file = new MockMultipartFile("file",
+            "fileThatDoesNotExists" + fileExtension,
+            "text/plain",
+            "This is dummy content".getBytes(StandardCharsets.UTF_8));
+
+        String savedFilename = picService.storeFile(file);
+
+        String savedFileExtension = "";
+        try {
+            savedFileExtension = savedFilename.substring(savedFilename.lastIndexOf("."));
+        } catch(Exception e) {
+            savedFileExtension = "";
+        }
+
+        assertNotNull(savedFilename);
+        assertEquals(fileExtension, savedFileExtension);
+
+        //tidy up
+        File fileToDel = new File(tmpRootFolder + File.separatorChar, savedFilename);
+        fileToDel.delete();
     }
 }

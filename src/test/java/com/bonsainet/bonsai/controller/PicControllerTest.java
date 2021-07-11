@@ -481,6 +481,8 @@ public class PicControllerTest {
         picSaved.setEntityId(picId);
         picSaved.setFileName(savedFileName);
 
+        Pic oldPicMock = mock(Pic.class);
+
         MockMultipartFile file = new MockMultipartFile("file",
             "fileThatDoesNotExists.jpg",
             "text/plain",
@@ -492,7 +494,7 @@ public class PicControllerTest {
         });
         when(picService.save(any())).thenReturn(completableFuture);
         when(picService.storeFile(file)).thenReturn(savedFileName);
-        when(picService.findById(picId)).thenReturn(Optional.empty());
+        when(picService.findById(picId)).thenReturn(Optional.of(oldPicMock));
 
         String jsonPic = new ObjectMapper().writeValueAsString(pic);
 
@@ -512,6 +514,20 @@ public class PicControllerTest {
         verify(picService).storeFile(file);
         verify(picService).findById(picId);
         verifyNoMoreInteractions(picService);
+        verify(oldPicMock).deleteImageIfExists();
+    }
+
+    @Test
+    void saveBadPicTest() throws Exception {
+        String jsonPic = "bad json";
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/pic/pic");
+        request.contentType(MediaType.APPLICATION_FORM_URLENCODED);
+        request.param("p", jsonPic);
+        ResultActions resultActions = this.mockMvc.perform(request)
+            .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(picService);
     }
 
     @Test
