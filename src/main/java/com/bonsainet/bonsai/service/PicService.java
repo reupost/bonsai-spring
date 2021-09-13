@@ -1,7 +1,7 @@
 package com.bonsainet.bonsai.service;
 
 import com.bonsainet.bonsai.misc.DocumentStorageException;
-import com.bonsainet.bonsai.model.EntityTypes;
+import com.bonsainet.bonsai.model.EntityType;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.repository.PicRepository;
 import java.util.Objects;
@@ -150,24 +150,24 @@ public class PicService implements IPicService {
   }
 
   @Override
-  public Page<Pic> findByEntityTypeAndEntityId(EntityTypes entityType, Integer entityId,
+  public Page<Pic> findByEntityTypeAndEntityId(EntityType entityType, Integer entityId,
       Pageable pageable) {
     return repository.findByEntityTypeAndEntityId(entityType, entityId, pageable);
   }
 
   @Override
-  public Page<Pic> findByEntityType(EntityTypes entityType, Pageable pageable) {
+  public Page<Pic> findByEntityType(EntityType entityType, Pageable pageable) {
     return repository.findByEntityType(entityType, pageable);
   }
 
   @Override
-  public Page<Pic> findByEntityTypeAndTitleContaining(EntityTypes entityType, String title,
+  public Page<Pic> findByEntityTypeAndTitleContaining(EntityType entityType, String title,
       Pageable pageable) {
     return repository.findByEntityTypeAndTitleContaining(entityType, title, pageable);
   }
 
   @Override
-  public Page<Pic> findByEntityTypeAndEntityIdAndTitleContaining(EntityTypes entityType,
+  public Page<Pic> findByEntityTypeAndEntityIdAndTitleContaining(EntityType entityType,
       Integer entityId, String title, Pageable pageable) {
     return repository
         .findByEntityTypeAndEntityIdAndTitleContaining(entityType, entityId, title, pageable);

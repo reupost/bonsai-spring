@@ -7,14 +7,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import com.bonsainet.bonsai.model.EntityTypes;
+import com.bonsainet.bonsai.model.EntityType;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.repository.PicRepository;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Future;
 
@@ -61,7 +60,7 @@ class PicServiceTest {
         when(picMock.getId()).thenReturn(1);
         when(picMock.getFileName()).thenReturn("test.jpg");
         when(picMock.getEntityId()).thenReturn(1);
-        when(picMock.getEntityType()).thenReturn(EntityTypes.BONSAI);
+        when(picMock.getEntityType()).thenReturn(EntityType.BONSAI);
 
         when(picService.findById(picMock.getId())).thenReturn(Optional.of(picMock));
 
@@ -135,9 +134,9 @@ class PicServiceTest {
 
         Pageable paging = PageRequest.of(0, 1, sortFinal);
 
-        picService.findByEntityTypeAndEntityId(EntityTypes.BONSAI, 1, paging);
+        picService.findByEntityTypeAndEntityId(EntityType.BONSAI, 1, paging);
 
-        verify(picRepository).findByEntityTypeAndEntityId(EntityTypes.BONSAI, 1, paging);
+        verify(picRepository).findByEntityTypeAndEntityId(EntityType.BONSAI, 1, paging);
         verifyNoMoreInteractions(picRepository);
     }
 
@@ -149,9 +148,9 @@ class PicServiceTest {
 
         Pageable paging = PageRequest.of(0, 1, sortFinal);
 
-        picService.findByEntityType(EntityTypes.BONSAI, paging);
+        picService.findByEntityType(EntityType.BONSAI, paging);
 
-        verify(picRepository).findByEntityType(EntityTypes.BONSAI, paging);
+        verify(picRepository).findByEntityType(EntityType.BONSAI, paging);
         verifyNoMoreInteractions(picRepository);
     }
 
@@ -163,9 +162,9 @@ class PicServiceTest {
 
         Pageable paging = PageRequest.of(0, 1, sortFinal);
 
-        picService.findByEntityTypeAndTitleContaining(EntityTypes.BONSAI, "title", paging);
+        picService.findByEntityTypeAndTitleContaining(EntityType.BONSAI, "title", paging);
 
-        verify(picRepository).findByEntityTypeAndTitleContaining(EntityTypes.BONSAI, "title", paging);
+        verify(picRepository).findByEntityTypeAndTitleContaining(EntityType.BONSAI, "title", paging);
         verifyNoMoreInteractions(picRepository);
     }
 
@@ -177,9 +176,9 @@ class PicServiceTest {
 
         Pageable paging = PageRequest.of(0, 1, sortFinal);
 
-        picService.findByEntityTypeAndEntityIdAndTitleContaining(EntityTypes.BONSAI, 1, "title", paging);
+        picService.findByEntityTypeAndEntityIdAndTitleContaining(EntityType.BONSAI, 1, "title", paging);
 
-        verify(picRepository).findByEntityTypeAndEntityIdAndTitleContaining(EntityTypes.BONSAI, 1, "title", paging);
+        verify(picRepository).findByEntityTypeAndEntityIdAndTitleContaining(EntityType.BONSAI, 1, "title", paging);
         verifyNoMoreInteractions(picRepository);
     }
 

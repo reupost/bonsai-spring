@@ -294,7 +294,7 @@ public class PicTest {
   public void supplementWithTest() {
     Pic pic = new Pic();
     pic.setId(1);
-    pic.setEntityType(EntityTypes.BONSAI);
+    pic.setEntityType(EntityType.BONSAI);
 
     Pic fromPic = new Pic();
     fromPic.setEntityId(1);
@@ -317,7 +317,7 @@ public class PicTest {
       assert false;
     }
     assertEquals(pic.getId(), 1); //not overwritten
-    assertEquals(pic.getEntityType(), EntityTypes.BONSAI); //not replaced with null
+    assertEquals(pic.getEntityType(), EntityType.BONSAI); //not replaced with null
     assertEquals(pic.getFileName(), fromPic.getFileName()); //supplemented
     assertEquals(pic.getEntityId(), fromPic.getEntityId()); //supplemented
     assertEquals(pic.getView(), fromPic.getView()); //supplemented
@@ -333,7 +333,7 @@ public class PicTest {
     Date dte = new Date();
 
     pic.setId(1);
-    pic.setEntityType(EntityTypes.BONSAI);
+    pic.setEntityType(EntityType.BONSAI);
     pic.setEntityId(2);
     pic.setTitle("test title");
     pic.setDateTaken(dte);
@@ -343,7 +343,7 @@ public class PicTest {
 
     assertEquals(pic.getId(), 1);
     assertEquals(pic.getEntityId(), 2);
-    assertEquals(pic.getEntityType(), EntityTypes.BONSAI);
+    assertEquals(pic.getEntityType(), EntityType.BONSAI);
     assertEquals(pic.getTitle(), "test title");
     assertEquals(pic.getDateTaken(), dte);
     assertEquals(pic.getRootFolder(), "folder");

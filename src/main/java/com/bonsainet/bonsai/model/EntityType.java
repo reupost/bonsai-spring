@@ -1,5 +1,5 @@
 package com.bonsainet.bonsai.model;
 
-public enum EntityTypes {
+public enum EntityType {
   BONSAI, PLANT, SPECIES, POT, BENCH, OTHER
 }

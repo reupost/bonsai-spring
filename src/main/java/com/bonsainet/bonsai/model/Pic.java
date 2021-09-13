@@ -52,7 +52,7 @@ public class Pic {
   private Integer id;
 
   @Enumerated(EnumType.STRING)
-  private EntityTypes entityType;
+  private EntityType entityType;
 
   private Integer entityId;
 

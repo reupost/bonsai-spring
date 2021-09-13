@@ -1,6 +1,6 @@
 package com.bonsainet.bonsai.controller;
 
-import com.bonsainet.bonsai.model.EntityTypes;
+import com.bonsainet.bonsai.model.EntityType;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.service.PicService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -205,7 +205,7 @@ public class PicControllerTest {
             Pic pic = new Pic();
             pic.setEntityId(i);
             pic.setId(1-i);
-            pic.setEntityType(EntityTypes.BONSAI);
+            pic.setEntityType(EntityType.BONSAI);
             picList.add(pic);
         }
 
@@ -240,7 +240,7 @@ public class PicControllerTest {
         for (int i = 0; i < 2; i++) {
             Pic pic = new Pic();
             pic.setEntityId(1-i);
-            pic.setEntityType(EntityTypes.BONSAI);
+            pic.setEntityType(EntityType.BONSAI);
             pic.setId(i);
             picList.add(pic);
         }
@@ -304,7 +304,7 @@ public class PicControllerTest {
         int passedSize = 1;
         int passedPage = 0;
         String passedFilter = "test";
-        EntityTypes passedEntityType = EntityTypes.BONSAI;
+        EntityType passedEntityType = EntityType.BONSAI;
 
         int picId = 1;
 
@@ -337,7 +337,7 @@ public class PicControllerTest {
     void findPicsForPageEntityTypeTest() throws Exception {
         int passedSize = 1;
         int passedPage = 0;
-        EntityTypes passedEntityType = EntityTypes.BONSAI;
+        EntityType passedEntityType = EntityType.BONSAI;
 
         int picId = 1;
 
@@ -371,7 +371,7 @@ public class PicControllerTest {
         int passedSize = 1;
         int passedPage = 0;
         int passedEntityId = 2;
-        EntityTypes passedEntityType = EntityTypes.BONSAI;
+        EntityType passedEntityType = EntityType.BONSAI;
 
         int picId = 1;
 
@@ -405,7 +405,7 @@ public class PicControllerTest {
         int passedSize = 1;
         int passedPage = 0;
         String passedFilter = "test";
-        EntityTypes passedEntityType = EntityTypes.BONSAI;
+        EntityType passedEntityType = EntityType.BONSAI;
         int passedEntityId = 2;
 
         int picId = 1;
@@ -441,7 +441,7 @@ public class PicControllerTest {
 
         Pic pic = new Pic();
         pic.setId(picId);
-        pic.setEntityType(EntityTypes.BONSAI);
+        pic.setEntityType(EntityType.BONSAI);
         pic.setEntityId(picId);
 
         CompletableFuture<Pic> completableFuture = new CompletableFuture<>();
@@ -472,12 +472,12 @@ public class PicControllerTest {
 
         Pic pic = new Pic();
         pic.setId(picId);
-        pic.setEntityType(EntityTypes.BONSAI);
+        pic.setEntityType(EntityType.BONSAI);
         pic.setEntityId(picId);
 
         Pic picSaved = new Pic();
         picSaved.setId(picId);
-        picSaved.setEntityType(EntityTypes.BONSAI);
+        picSaved.setEntityType(EntityType.BONSAI);
         picSaved.setEntityId(picId);
         picSaved.setFileName(savedFileName);
 

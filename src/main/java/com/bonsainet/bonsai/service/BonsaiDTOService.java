@@ -2,7 +2,7 @@ package com.bonsainet.bonsai.service;
 
 import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.model.BonsaiDTO;
-import com.bonsainet.bonsai.model.EntityTypes;
+import com.bonsainet.bonsai.model.EntityType;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.repository.BonsaiRepository;
 import com.bonsainet.bonsai.repository.PicRepository;
@@ -82,7 +82,7 @@ public class BonsaiDTOService implements IBonsaiDTOService {
 
       Pageable paging = PageRequest.of(0, 1, sortFinal);
 
-      Page<Pic> pics = picRepository.findByEntityTypeAndEntityId(EntityTypes.BONSAI, bonsai.getId(), paging);
+      Page<Pic> pics = picRepository.findByEntityTypeAndEntityId(EntityType.BONSAI, bonsai.getId(), paging);
       if (pics != null && pics.hasContent()) {
         bonsaiDTO.setPics(pics);
       }

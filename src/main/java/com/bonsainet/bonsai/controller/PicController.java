@@ -1,6 +1,6 @@
 package com.bonsainet.bonsai.controller;
 
-import com.bonsainet.bonsai.model.EntityTypes;
+import com.bonsainet.bonsai.model.EntityType;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.service.IPicService;
@@ -12,7 +12,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,7 +54,7 @@ public class PicController {
       value = "/pics_page",
       produces = MediaType.APPLICATION_JSON_VALUE)
   public Page<Pic> findPicsForPage(
-      @RequestParam(required = false) EntityTypes entityType,
+      @RequestParam(required = false) EntityType entityType,
       @RequestParam(required = false) Integer entityId,
       @RequestParam(required = false) String filter,
       @RequestParam(required = false) List<String> sort,
