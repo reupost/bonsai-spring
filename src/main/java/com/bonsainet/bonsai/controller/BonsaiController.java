@@ -28,6 +28,11 @@ public class BonsaiController {
     this.bonsaiService = bonsaiService;
   }
 
+  @GetMapping(path = "/bonsai/{id}")
+  public Optional<Bonsai> getBonsai(@PathVariable Integer id) {
+    return bonsaiService.findById(id);
+  }
+
   @GetMapping("/bonsais")
   public List<Bonsai> findBonsais() {
     return bonsaiService.findAll();
