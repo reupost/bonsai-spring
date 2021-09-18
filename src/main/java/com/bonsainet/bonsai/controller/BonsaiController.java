@@ -58,7 +58,8 @@ public class BonsaiController {
     if (filter == null || filter.length() == 0) {
       bonsaiResults = bonsaiService.findAll(paging);
     } else {
-      bonsaiResults = bonsaiService.findByNameContaining(filter, paging);
+      // bonsaiResults = bonsaiService.findByNameContaining(filter, paging);
+      bonsaiResults = bonsaiService.findByNameOrTaxonContaining(filter, paging);
     }
     return bonsaiResults;
   }

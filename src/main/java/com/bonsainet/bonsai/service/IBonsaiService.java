@@ -21,5 +21,7 @@ public interface IBonsaiService {
 
   Page<Bonsai> findByNameContaining(String name, Pageable pageable);
 
+  Page<Bonsai> findByNameOrTaxonContaining(String name, Pageable pageable);
+
   Long count();
 }

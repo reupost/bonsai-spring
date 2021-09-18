@@ -52,6 +52,10 @@ public class BonsaiService implements IBonsaiService {
   public Page<Bonsai> findByNameContaining(String name, Pageable pageable) {
     return repository.findByNameContaining(name, pageable);
   }
+  @Override
+  public Page<Bonsai> findByNameOrTaxonContaining(String name, Pageable pageable) {
+    return repository.findByNameOrTaxonContaining(name, pageable);
+  }
 
   @Override
   public Long count() {
