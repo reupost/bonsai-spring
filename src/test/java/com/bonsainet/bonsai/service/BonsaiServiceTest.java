@@ -112,5 +112,18 @@ class BonsaiServiceTest {
     verifyNoMoreInteractions(bonsaiRepository);
   }
 
+  @Test
+  void shouldFindByNameOrTaxonContaining() {
+    ArrayList<Order> sortBy = new ArrayList<>();
+    sortBy.add(new Sort.Order(Sort.Direction.ASC, "tag"));
+    Sort sortFinal = Sort.by(sortBy);
+
+    Pageable paging = PageRequest.of(0, 1, sortFinal);
+
+    bonsaiService.findByNameOrTaxonContaining("test", paging);
+
+    verify(bonsaiRepository).findByNameOrTaxonContaining("test", paging);
+    verifyNoMoreInteractions(bonsaiRepository);
+  }
 
 }

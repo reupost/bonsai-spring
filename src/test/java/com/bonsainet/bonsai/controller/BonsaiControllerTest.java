@@ -53,6 +53,23 @@ public class BonsaiControllerTest {
   }
 
   @Test
+  void findBonsaiByIdTest() throws Exception {
+    int bonsaiId = 1;
+    Bonsai bonsai = new Bonsai();
+    bonsai.setId(bonsaiId);
+
+    when(bonsaiService.findById(bonsaiId)).thenReturn(Optional.of(bonsai));
+
+    this.mockMvc.perform(get("/bonsai/bonsai/" + bonsaiId))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(jsonPath("$.id", is(bonsaiId)));
+
+    verify(bonsaiService).findById(bonsaiId);
+    verifyNoMoreInteractions(bonsaiService);
+  }
+
+  @Test
   void findBonsaisTest() throws Exception {
     int bonsaiId = 1;
     Bonsai bonsai = new Bonsai();
@@ -273,7 +290,7 @@ public class BonsaiControllerTest {
     Page<Bonsai> pageBonsai = new PageImpl<>(bonsaiList, pageRequest, bonsaiList.size());
 
     Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
-    when(bonsaiService.findByNameContaining(passedFilter, paging)).thenReturn(pageBonsai);
+    when(bonsaiService.findByNameOrTaxonContaining(passedFilter, paging)).thenReturn(pageBonsai);
 
     this.mockMvc.perform(get("/bonsai/bonsais_page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter))
         .andExpect(status().isOk())
@@ -281,7 +298,7 @@ public class BonsaiControllerTest {
         .andExpect(jsonPath("$.content", hasSize(passedSize)))
         .andExpect(jsonPath("$.content[0].id", is(bonsaiId)));
 
-    verify(bonsaiService).findByNameContaining(passedFilter, paging);
+    verify(bonsaiService).findByNameOrTaxonContaining(passedFilter, paging);
     verifyNoMoreInteractions(bonsaiService);
   }
 
