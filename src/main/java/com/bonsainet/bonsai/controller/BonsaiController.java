@@ -28,7 +28,7 @@ public class BonsaiController {
     this.bonsaiService = bonsaiService;
   }
 
-  @GetMapping(path = "/bonsai/{id}")
+  @GetMapping(path = "/{id}")
   public Optional<Bonsai> getBonsai(@PathVariable Integer id) {
     return bonsaiService.findById(id);
   }
@@ -39,7 +39,7 @@ public class BonsaiController {
   }
 
 
-  @GetMapping("/bonsais_page")
+  @GetMapping("/page")
   public Page<Bonsai> findBonsaisForPage(
       @RequestParam(required = false) String filter,
       @RequestParam(required = false) List<String> sort,
@@ -64,18 +64,25 @@ public class BonsaiController {
     return bonsaiResults;
   }
 
-  @GetMapping("/bonsais/count")
+  @GetMapping("/count")
   public Long countBonsais() {
     return bonsaiService.count();
   }
 
-  @PutMapping(path = "/bonsai")
+  @PutMapping(path = "/")
   public Bonsai setBonsai(@Valid @RequestBody Bonsai t) {
     // sleep(1000);
     return bonsaiService.save(t);
   }
 
-  @DeleteMapping(path = "/bonsais/del/{id}")
+  @PutMapping(path = "/dto")
+  public BonsaiDTO setBonsai(@Valid @RequestBody BonsaiDTO bonsaiDTO) {
+    // sleep(1000);
+    Bonsai bonsai = bonsaiService.toBonsai(bonsaiDTO);
+    return bonsaiService.toDto(bonsaiService.save(bonsai));
+  }
+
+  @DeleteMapping(path = "/{id}")
   public ResponseEntity<Long> deleteBonsai(@PathVariable Integer id) {
     Optional<Bonsai> t = bonsaiService.findById(id);
     if (t.isPresent()) {

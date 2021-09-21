@@ -1,7 +1,10 @@
 package com.bonsainet.bonsai.service;
 
 import com.bonsainet.bonsai.model.Bonsai;
+import com.bonsainet.bonsai.model.BonsaiDTO;
+import com.bonsainet.bonsai.model.Taxon;
 import com.bonsainet.bonsai.repository.BonsaiRepository;
+import com.bonsainet.bonsai.repository.TaxonRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,10 +19,12 @@ public class BonsaiService implements IBonsaiService {
   private final ApplicationContext context;
 
   private final BonsaiRepository repository;
+  private final TaxonRepository taxonRepository;
 
-  public BonsaiService(ApplicationContext context, BonsaiRepository repository) {
+  public BonsaiService(ApplicationContext context, BonsaiRepository repository, TaxonRepository taxonRepository) {
     this.context = context;
     this.repository = repository;
+    this.taxonRepository = taxonRepository;
   }
 
   @Override
@@ -60,5 +65,21 @@ public class BonsaiService implements IBonsaiService {
   @Override
   public Long count() {
     return repository.count();
+  }
+
+  //TODO not a huge fan of this at all
+  public Bonsai toBonsai(BonsaiDTO bonsaiDto) {
+    IBonsaiMapperImpl iBonsaiMapper = new IBonsaiMapperImpl();
+    Bonsai bonsai = iBonsaiMapper.toBonsai(bonsaiDto);
+    Optional<Taxon> t = taxonRepository.findById(bonsaiDto.getTaxonId());
+    t.ifPresent(bonsai::setTaxon);
+    return bonsai;
+  }
+
+  public BonsaiDTO toDto(Bonsai bonsai) {
+    IBonsaiMapperImpl iBonsaiMapper = new IBonsaiMapperImpl();
+    BonsaiDTO bonsaiDTO = iBonsaiMapper.toDTO(bonsai);
+    bonsaiDTO.setTaxonId(bonsai.getTaxon().getId());
+    return bonsaiDTO;
   }
 }

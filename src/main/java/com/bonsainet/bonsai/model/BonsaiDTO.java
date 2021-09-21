@@ -2,7 +2,6 @@ package com.bonsainet.bonsai.model;
 
 import java.util.Date;
 import lombok.Data;
-import org.springframework.data.domain.Page;
 
 @Data
 public class BonsaiDTO {
@@ -26,9 +25,7 @@ public class BonsaiDTO {
   private Boolean isNoHoper;
   private String notes;
 
-  private TaxonDTO taxon;
-
-  private Page<Pic> pics;
+  private Integer taxonId;
 
   public BonsaiDTO() {
   }

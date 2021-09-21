@@ -8,6 +8,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.repository.BonsaiRepository;
 
+import com.bonsainet.bonsai.repository.PicRepository;
+import com.bonsainet.bonsai.repository.TaxonRepository;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Sort.Order;
 class BonsaiServiceTest {
 
   private BonsaiService bonsaiService;
+  private TaxonRepository taxonRepository;
   private ApplicationContext applicationContext;
 
   BonsaiRepository bonsaiRepository;
@@ -28,7 +31,8 @@ class BonsaiServiceTest {
   void setup() {
     applicationContext = mock(ApplicationContext.class);
     bonsaiRepository = mock(BonsaiRepository.class);
-    bonsaiService = new BonsaiService(applicationContext, bonsaiRepository);
+    taxonRepository = mock(TaxonRepository.class);
+    bonsaiService = new BonsaiService(applicationContext, bonsaiRepository, taxonRepository);
   }
 
   @Test

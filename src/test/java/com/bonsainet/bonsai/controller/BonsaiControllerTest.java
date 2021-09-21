@@ -60,7 +60,7 @@ public class BonsaiControllerTest {
 
     when(bonsaiService.findById(bonsaiId)).thenReturn(Optional.of(bonsai));
 
-    this.mockMvc.perform(get("/bonsai/bonsai/" + bonsaiId))
+    this.mockMvc.perform(get("/bonsai/" + bonsaiId))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.id", is(bonsaiId)));
@@ -94,7 +94,7 @@ public class BonsaiControllerTest {
     Long count = 1L;
     when(bonsaiService.count()).thenReturn(count);
 
-    this.mockMvc.perform(get("/bonsai/bonsais/count"))
+    this.mockMvc.perform(get("/bonsai/count"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(content().string(count.toString()));
@@ -124,7 +124,7 @@ public class BonsaiControllerTest {
     Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
     when(bonsaiService.findAll(paging)).thenReturn(pageBonsai);
 
-    this.mockMvc.perform(get("/bonsai/bonsais_page?page=" + passedPage + "&size=" + passedSize))
+    this.mockMvc.perform(get("/bonsai/page?page=" + passedPage + "&size=" + passedSize))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(passedSize)))
@@ -157,7 +157,7 @@ public class BonsaiControllerTest {
     Pageable paging = PageRequest.of(fixedPage, fixedSize, sortFinal);
     when(bonsaiService.findAll(paging)).thenReturn(pageBonsai);
 
-    this.mockMvc.perform(get("/bonsai/bonsais_page?page=" + passedPage + "&size=" + passedSize))
+    this.mockMvc.perform(get("/bonsai/page?page=" + passedPage + "&size=" + passedSize))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(fixedSize)))
@@ -191,7 +191,7 @@ public class BonsaiControllerTest {
     Pageable paging = PageRequest.of(passedPage, fixedSize, sortFinal);
     when(bonsaiService.findAll(paging)).thenReturn(pageBonsai);
 
-    this.mockMvc.perform(get("/bonsai/bonsais_page?page=" + passedPage + "&size=" + passedSize))
+    this.mockMvc.perform(get("/bonsai/page?page=" + passedPage + "&size=" + passedSize))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(fixedSize)))
@@ -224,7 +224,7 @@ public class BonsaiControllerTest {
     Pageable paging = PageRequest.of(passedPage, bonsaiList.size(), sortFinal);
     when(bonsaiService.findAll(paging)).thenReturn(pageBonsai);
 
-    this.mockMvc.perform(get("/bonsai/bonsais_page?page=" + passedPage + "&size=" + bonsaiList.size() + "&sort=id&dir=asc"))
+    this.mockMvc.perform(get("/bonsai/page?page=" + passedPage + "&size=" + bonsaiList.size() + "&sort=id&dir=asc"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(bonsaiList.size())))
@@ -258,7 +258,7 @@ public class BonsaiControllerTest {
     Pageable paging = PageRequest.of(passedPage, bonsaiList.size(), sortFinal);
     when(bonsaiService.findAll(paging)).thenReturn(pageBonsai);
 
-    this.mockMvc.perform(get("/bonsai/bonsais_page?page=" + passedPage + "&size=" + bonsaiList.size() + "&sort=id&dir=desc"))
+    this.mockMvc.perform(get("/bonsai/page?page=" + passedPage + "&size=" + bonsaiList.size() + "&sort=id&dir=desc"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(bonsaiList.size())))
@@ -292,7 +292,7 @@ public class BonsaiControllerTest {
     Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
     when(bonsaiService.findByNameOrTaxonContaining(passedFilter, paging)).thenReturn(pageBonsai);
 
-    this.mockMvc.perform(get("/bonsai/bonsais_page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter))
+    this.mockMvc.perform(get("/bonsai/page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(passedSize)))
@@ -311,7 +311,7 @@ public class BonsaiControllerTest {
 
     when(bonsaiService.save(bonsai)).thenReturn(bonsai);
 
-    this.mockMvc.perform(put("/bonsai/bonsai")
+    this.mockMvc.perform(put("/bonsai")
         .contentType(TestUtil.APPLICATION_JSON_UTF8)
         .content(TestUtil.convertObjectToJsonBytes(bonsai)))
         .andExpect(status().isOk())
@@ -331,7 +331,7 @@ public class BonsaiControllerTest {
 
     when(bonsaiService.findById(bonsaiId)).thenReturn(Optional.of(bonsai));
 
-    this.mockMvc.perform(delete("/bonsai/bonsais/del/1"))
+    this.mockMvc.perform(delete("/bonsai/1"))
         .andExpect(status().isOk());
 
     verify(bonsaiService).findById(bonsaiId);
@@ -348,7 +348,7 @@ public class BonsaiControllerTest {
 
     when(bonsaiService.findById(bonsaiId)).thenReturn(Optional.empty());
 
-    this.mockMvc.perform(delete("/bonsai/bonsais/del/1"))
+    this.mockMvc.perform(delete("/bonsai/1"))
         .andExpect(status().isNotFound());
 
     verify(bonsaiService).findById(bonsaiId);

@@ -8,6 +8,8 @@ import org.mapstruct.Mapping;
 @Mapper
 public interface IBonsaiMapper {
 
-  @Mapping(target="taxon", source = "taxon")
-  BonsaiDTO bonsaiToBonsaiDTO(Bonsai bonsai);
+  //TODO is there a way of using the @Mapping to convert taxon <--> taxonId instead of doing it manually in BonsaiService?
+  BonsaiDTO toDTO(Bonsai bonsai);
+
+  Bonsai toBonsai(BonsaiDTO bonsaiDto);
 }
