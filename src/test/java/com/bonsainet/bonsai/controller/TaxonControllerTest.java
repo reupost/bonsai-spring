@@ -77,7 +77,7 @@ public class TaxonControllerTest {
     Long count = 1L;
     when(taxonService.count()).thenReturn(count);
 
-    this.mockMvc.perform(get("/taxon/taxa/count"))
+    this.mockMvc.perform(get("/taxon/count"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(content().string(count.toString()));
@@ -107,7 +107,7 @@ public class TaxonControllerTest {
     Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
     when(taxonService.findAll(paging)).thenReturn(pageTaxon);
 
-    this.mockMvc.perform(get("/taxon/taxa_page?page=" + passedPage + "&size=" + passedSize))
+    this.mockMvc.perform(get("/taxon/page?page=" + passedPage + "&size=" + passedSize))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(passedSize)))
@@ -140,7 +140,7 @@ public class TaxonControllerTest {
     Pageable paging = PageRequest.of(fixedPage, fixedSize, sortFinal);
     when(taxonService.findAll(paging)).thenReturn(pageTaxon);
 
-    this.mockMvc.perform(get("/taxon/taxa_page?page=" + passedPage + "&size=" + passedSize))
+    this.mockMvc.perform(get("/taxon/page?page=" + passedPage + "&size=" + passedSize))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(fixedSize)))
@@ -174,7 +174,7 @@ public class TaxonControllerTest {
     Pageable paging = PageRequest.of(passedPage, fixedSize, sortFinal);
     when(taxonService.findAll(paging)).thenReturn(pageTaxon);
 
-    this.mockMvc.perform(get("/taxon/taxa_page?page=" + passedPage + "&size=" + passedSize))
+    this.mockMvc.perform(get("/taxon/page?page=" + passedPage + "&size=" + passedSize))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(fixedSize)))
@@ -207,7 +207,7 @@ public class TaxonControllerTest {
     Pageable paging = PageRequest.of(passedPage, taxaList.size(), sortFinal);
     when(taxonService.findAll(paging)).thenReturn(pageTaxon);
 
-    this.mockMvc.perform(get("/taxon/taxa_page?page=" + passedPage + "&size=" + taxaList.size() + "&sort=id&dir=asc"))
+    this.mockMvc.perform(get("/taxon/page?page=" + passedPage + "&size=" + taxaList.size() + "&sort=id&dir=asc"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(taxaList.size())))
@@ -241,7 +241,7 @@ public class TaxonControllerTest {
     Pageable paging = PageRequest.of(passedPage, taxaList.size(), sortFinal);
     when(taxonService.findAll(paging)).thenReturn(pageTaxon);
 
-    this.mockMvc.perform(get("/taxon/taxa_page?page=" + passedPage + "&size=" + taxaList.size() + "&sort=id&dir=desc"))
+    this.mockMvc.perform(get("/taxon/page?page=" + passedPage + "&size=" + taxaList.size() + "&sort=id&dir=desc"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(taxaList.size())))
@@ -275,7 +275,7 @@ public class TaxonControllerTest {
     Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
     when(taxonService.findByFullNameContaining(passedFilter, paging)).thenReturn(pageTaxon);
 
-    this.mockMvc.perform(get("/taxon/taxa_page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter))
+    this.mockMvc.perform(get("/taxon/page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(passedSize)))
@@ -294,7 +294,7 @@ public class TaxonControllerTest {
 
     when(taxonService.save(taxon)).thenReturn(taxon);
 
-    this.mockMvc.perform(put("/taxon/taxon")
+    this.mockMvc.perform(put("/taxon")
         .contentType(TestUtil.APPLICATION_JSON_UTF8)
         .content(TestUtil.convertObjectToJsonBytes(taxon)))
         .andExpect(status().isOk())
@@ -314,7 +314,7 @@ public class TaxonControllerTest {
 
     when(taxonService.findById(taxonId)).thenReturn(Optional.of(taxon));
 
-    this.mockMvc.perform(delete("/taxon/taxon/del/1"))
+    this.mockMvc.perform(delete("/taxon/1"))
         .andExpect(status().isOk());
 
     verify(taxonService).findById(taxonId);
@@ -331,7 +331,7 @@ public class TaxonControllerTest {
 
     when(taxonService.findById(taxonId)).thenReturn(Optional.empty());
 
-    this.mockMvc.perform(delete("/taxon/taxon/del/1"))
+    this.mockMvc.perform(delete("/taxon/1"))
         .andExpect(status().isNotFound());
 
     verify(taxonService).findById(taxonId);

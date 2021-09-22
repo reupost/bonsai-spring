@@ -69,7 +69,7 @@ public class BonsaiController {
     return bonsaiService.count();
   }
 
-  @PutMapping(path = "/")
+  @PutMapping(path = "")
   public Bonsai setBonsai(@Valid @RequestBody Bonsai t) {
     // sleep(1000);
     return bonsaiService.save(t);

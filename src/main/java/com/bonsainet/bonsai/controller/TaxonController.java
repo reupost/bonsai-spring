@@ -1,5 +1,6 @@
 package com.bonsainet.bonsai.controller;
 
+import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.Taxon;
 
@@ -29,6 +30,11 @@ public class TaxonController {
     this.taxonService = taxonService;
   }
 
+  @GetMapping(path = "/{id}")
+  public Optional<Taxon> getTaxon(@PathVariable Integer id) {
+    return taxonService.findById(id);
+  }
+
   @GetMapping("/taxa")
   public List<Taxon> findTaxa() {
     return taxonService.findAll();
@@ -44,7 +50,7 @@ public class TaxonController {
    * @param size   page size
    * @return
    */
-  @GetMapping("/taxa_page")
+  @GetMapping("/page")
   public Page<Taxon> findTaxaForPage(
       @RequestParam(required = false) String filter,
       @RequestParam(required = false) List<String> sort,
@@ -67,18 +73,25 @@ public class TaxonController {
     return taxaResults;
   }
 
-  @GetMapping("/taxa/count")
+  @GetMapping("/count")
   public Long countTaxa() {
     return taxonService.count();
   }
 
-  @PutMapping(path = "/taxon")
+  @PutMapping(path = "")
   public Taxon setTaxon(@Valid @RequestBody Taxon t) throws InterruptedException {
     sleep(1000);
     return taxonService.save(t);
   }
 
-  @DeleteMapping(path = "/taxon/del/{id}")
+  @PutMapping(path = "/dto")
+  public TaxonDTO setTaxon(@Valid @RequestBody TaxonDTO taxonDTO) {
+    // sleep(1000);
+    Taxon taxon = taxonService.toTaxon(taxonDTO);
+    return taxonService.toDto(taxonService.save(taxon));
+  }
+
+  @DeleteMapping(path = "/{id}")
   public ResponseEntity<Long> deleteTaxon(@PathVariable Integer id) {
     Optional<Taxon> t = taxonService.findById(id);
     if (t.isPresent()) {

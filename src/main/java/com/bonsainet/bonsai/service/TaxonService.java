@@ -1,6 +1,7 @@
 package com.bonsainet.bonsai.service;
 
 import com.bonsainet.bonsai.model.Taxon;
+import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.repository.TaxonRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
@@ -64,5 +65,14 @@ public class TaxonService implements ITaxonService {
     return repository.count();
   }
 
+  //TODO not a huge fan of this at all
+  public Taxon toTaxon(TaxonDTO taxonDto) {
+    ITaxonMapperImpl iTaxonMapper = new ITaxonMapperImpl();
+    return iTaxonMapper.toTaxon(taxonDto);
+  }
 
+  public TaxonDTO toDto(Taxon taxon) {
+    ITaxonMapperImpl iTaxonMapper = new ITaxonMapperImpl();
+    return iTaxonMapper.toDTO(taxon);
+  }
 }
