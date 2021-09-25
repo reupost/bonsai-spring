@@ -79,7 +79,7 @@ public class DiaryEntryControllerTest {
     Long count = 1L;
     when(diaryEntryService.count()).thenReturn(count);
 
-    this.mockMvc.perform(get("/diaryEntry/diaryEntries/count"))
+    this.mockMvc.perform(get("/diaryEntry/count"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(content().string(count.toString()));
@@ -109,7 +109,7 @@ public class DiaryEntryControllerTest {
     Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
     when(diaryEntryService.findAll(paging)).thenReturn(pageDiaryEntry);
 
-    this.mockMvc.perform(get("/diaryEntry/diaryEntries_page?page=" + passedPage + "&size=" + passedSize))
+    this.mockMvc.perform(get("/diaryEntry/page?page=" + passedPage + "&size=" + passedSize))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(passedSize)))
@@ -142,7 +142,7 @@ public class DiaryEntryControllerTest {
     Pageable paging = PageRequest.of(fixedPage, fixedSize, sortFinal);
     when(diaryEntryService.findAll(paging)).thenReturn(pageDiaryEntry);
 
-    this.mockMvc.perform(get("/diaryEntry/diaryEntries_page?page=" + passedPage + "&size=" + passedSize))
+    this.mockMvc.perform(get("/diaryEntry/page?page=" + passedPage + "&size=" + passedSize))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(fixedSize)))
@@ -176,7 +176,7 @@ public class DiaryEntryControllerTest {
     Pageable paging = PageRequest.of(passedPage, fixedSize, sortFinal);
     when(diaryEntryService.findAll(paging)).thenReturn(pageDiaryEntry);
 
-    this.mockMvc.perform(get("/diaryEntry/diaryEntries_page?page=" + passedPage + "&size=" + passedSize))
+    this.mockMvc.perform(get("/diaryEntry/page?page=" + passedPage + "&size=" + passedSize))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(fixedSize)))
@@ -210,7 +210,7 @@ public class DiaryEntryControllerTest {
     Pageable paging = PageRequest.of(passedPage, diaryEntryList.size(), sortFinal);
     when(diaryEntryService.findAll(paging)).thenReturn(pageDiaryEntry);
 
-    this.mockMvc.perform(get("/diaryEntry/diaryEntries_page?page=" + passedPage + "&size=" + diaryEntryList.size() + "&sort=id&dir=asc"))
+    this.mockMvc.perform(get("/diaryEntry/page?page=" + passedPage + "&size=" + diaryEntryList.size() + "&sort=id&dir=asc"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(diaryEntryList.size())))
@@ -245,7 +245,7 @@ public class DiaryEntryControllerTest {
     Pageable paging = PageRequest.of(passedPage, diaryEntryList.size(), sortFinal);
     when(diaryEntryService.findAll(paging)).thenReturn(pageDiaryEntry);
 
-    this.mockMvc.perform(get("/diaryEntry/diaryEntries_page?page=" + passedPage + "&size=" + diaryEntryList.size() + "&sort=id&dir=desc"))
+    this.mockMvc.perform(get("/diaryEntry/page?page=" + passedPage + "&size=" + diaryEntryList.size() + "&sort=id&dir=desc"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(diaryEntryList.size())))
@@ -279,7 +279,7 @@ public class DiaryEntryControllerTest {
     Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
     when(diaryEntryService.findByEntryTextContaining(passedFilter, paging)).thenReturn(pageDiaryEntry);
 
-    this.mockMvc.perform(get("/diaryEntry/diaryEntries_page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter))
+    this.mockMvc.perform(get("/diaryEntry/page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(jsonPath("$.content", hasSize(passedSize)))
@@ -298,7 +298,7 @@ public class DiaryEntryControllerTest {
 
     when(diaryEntryService.save(diaryEntry)).thenReturn(diaryEntry);
 
-    this.mockMvc.perform(put("/diaryEntry/diaryEntry")
+    this.mockMvc.perform(put("/diaryEntry")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(diaryEntry)))
         .andExpect(status().isOk())
@@ -318,7 +318,7 @@ public class DiaryEntryControllerTest {
 
     when(diaryEntryService.findById(diaryEntryId)).thenReturn(Optional.of(diaryEntry));
 
-    this.mockMvc.perform(delete("/diaryEntry/diaryEntry/del/1"))
+    this.mockMvc.perform(delete("/diaryEntry/1"))
         .andExpect(status().isOk());
 
     verify(diaryEntryService).findById(diaryEntryId);
@@ -335,7 +335,7 @@ public class DiaryEntryControllerTest {
 
     when(diaryEntryService.findById(diaryEntryId)).thenReturn(Optional.empty());
 
-    this.mockMvc.perform(delete("/diaryEntry/diaryEntry/del/1"))
+    this.mockMvc.perform(delete("/diaryEntry/1"))
         .andExpect(status().isNotFound());
 
     verify(diaryEntryService).findById(diaryEntryId);

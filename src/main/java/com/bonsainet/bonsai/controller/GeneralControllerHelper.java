@@ -69,8 +69,8 @@ public class GeneralControllerHelper {
     if (size < 1) {
       size = 1;
     }
-    if (size > 100) {
-      size = 100;
+    if (size > 300) {
+      size = 300;
     }
     if (page < 0) {
       page = 0;

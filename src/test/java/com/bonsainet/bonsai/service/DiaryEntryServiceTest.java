@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.model.DiaryEntry;
+import com.bonsainet.bonsai.repository.BonsaiRepository;
 import com.bonsainet.bonsai.repository.DiaryEntryRepository;
 
 import java.util.ArrayList;
@@ -24,12 +25,15 @@ class DiaryEntryServiceTest {
   private ApplicationContext applicationContext;
 
   DiaryEntryRepository diaryEntryRepository;
+  BonsaiRepository bonsaiRepository;
 
   @BeforeEach
   void setup() {
     applicationContext = mock(ApplicationContext.class);
     diaryEntryRepository = mock(DiaryEntryRepository.class);
-    diaryEntryService = new DiaryEntryService(applicationContext, diaryEntryRepository);
+    bonsaiRepository = mock(BonsaiRepository.class);
+
+    diaryEntryService = new DiaryEntryService(applicationContext, diaryEntryRepository, bonsaiRepository);
   }
 
   @Test

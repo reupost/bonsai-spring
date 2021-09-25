@@ -1,6 +1,7 @@
 package com.bonsainet.bonsai.controller;
 
 import com.bonsainet.bonsai.model.DiaryEntry;
+import com.bonsainet.bonsai.model.DiaryEntryDTO;
 import com.bonsainet.bonsai.service.IDiaryEntryService;
 
 import java.util.ArrayList;
@@ -26,13 +27,18 @@ public class DiaryEntryController {
     this.diaryEntryService = diaryEntryService;
   }
 
+  @GetMapping(path = "/{id}")
+  public Optional<DiaryEntry> getDiaryEntry(@PathVariable Integer id) {
+    return diaryEntryService.findById(id);
+  }
+
   @GetMapping("/diaryEntries")
   public List<DiaryEntry> findDiaryEntries() {
     return diaryEntryService.findAll();
   }
 
 
-  @GetMapping("/diaryEntries_page")
+  @GetMapping("/page")
   public Page<DiaryEntry> findDiaryEntriesForPage(
       @RequestParam(required = false) String filter,
       @RequestParam(required = false) List<String> sort,
@@ -54,18 +60,25 @@ public class DiaryEntryController {
     return diaryEntryResults;
   }
 
-  @GetMapping("/diaryEntries/count")
+  @GetMapping("/count")
   public Long countDiaryEntries() {
     return diaryEntryService.count();
   }
 
-  @PutMapping(path = "/diaryEntry")
+  @PutMapping(path = "")
   public DiaryEntry setDiaryEntry(@Valid @RequestBody DiaryEntry t) {
     // sleep(1000);
     return diaryEntryService.save(t);
   }
 
-  @DeleteMapping(path = "/diaryEntry/del/{id}")
+  @PutMapping(path = "/dto")
+  public DiaryEntryDTO setDiaryEntry(@Valid @RequestBody DiaryEntryDTO diaryEntryDTO) {
+    // sleep(1000);
+    DiaryEntry diaryEntry = diaryEntryService.toDiaryEntry(diaryEntryDTO);
+    return diaryEntryService.toDto(diaryEntryService.save(diaryEntry));
+  }
+
+  @DeleteMapping(path = "/{id}")
   public ResponseEntity<Long> deleteDiaryEntry(@PathVariable Integer id) {
     Optional<DiaryEntry> t = diaryEntryService.findById(id);
     if (t.isPresent()) {

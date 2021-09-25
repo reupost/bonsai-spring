@@ -1,7 +1,11 @@
 package com.bonsainet.bonsai.service;
 
 import com.bonsainet.bonsai.model.Bonsai;
+import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.DiaryEntry;
+import com.bonsainet.bonsai.model.DiaryEntryDTO;
+import com.bonsainet.bonsai.model.Taxon;
+import com.bonsainet.bonsai.repository.BonsaiRepository;
 import com.bonsainet.bonsai.repository.DiaryEntryRepository;
 import java.util.List;
 import java.util.Optional;
@@ -16,10 +20,12 @@ public class DiaryEntryService implements IDiaryEntryService {
   private final ApplicationContext context;
 
   private final DiaryEntryRepository repository;
+  private final BonsaiRepository bonsaiRepository;
 
-  public DiaryEntryService(ApplicationContext context, DiaryEntryRepository repository) {
+  public DiaryEntryService(ApplicationContext context, DiaryEntryRepository repository, BonsaiRepository bonsaiRepository) {
     this.context = context;
     this.repository = repository;
+    this.bonsaiRepository = bonsaiRepository;
   }
 
   @Override
@@ -62,4 +68,19 @@ public class DiaryEntryService implements IDiaryEntryService {
     return repository.count();
   }
 
+  //TODO not a huge fan of this at all
+  public DiaryEntry toDiaryEntry(DiaryEntryDTO diaryEntryDto) {
+    IDiaryEntryMapperImpl iDiaryEntryMapper = new IDiaryEntryMapperImpl();
+    DiaryEntry diaryEntry = iDiaryEntryMapper.toDiaryEntry(diaryEntryDto);
+    Optional<Bonsai> b = bonsaiRepository.findById(diaryEntryDto.getBonsaiId());
+    b.ifPresent(diaryEntry::setBonsai);
+    return diaryEntry;
+  }
+
+  public DiaryEntryDTO toDto(DiaryEntry diaryEntry) {
+    IDiaryEntryMapperImpl iDiaryEntryMapper = new IDiaryEntryMapperImpl();
+    DiaryEntryDTO diaryEntryDTO = iDiaryEntryMapper.toDTO(diaryEntry);
+    diaryEntryDTO.setBonsaiId(diaryEntry.getBonsai().getId());
+    return diaryEntryDTO;
+  }
 }

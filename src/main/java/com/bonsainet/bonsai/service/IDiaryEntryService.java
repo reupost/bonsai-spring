@@ -2,6 +2,9 @@ package com.bonsainet.bonsai.service;
 
 import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.model.DiaryEntry;
+import com.bonsainet.bonsai.model.DiaryEntryDTO;
+import com.bonsainet.bonsai.model.Taxon;
+import com.bonsainet.bonsai.model.TaxonDTO;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -25,4 +28,7 @@ public interface IDiaryEntryService {
 
   Long count();
 
+  DiaryEntry toDiaryEntry(DiaryEntryDTO diaryEntryDto);
+
+  DiaryEntryDTO toDto(DiaryEntry diaryEntry);
 }
