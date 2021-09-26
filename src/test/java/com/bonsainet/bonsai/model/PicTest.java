@@ -10,6 +10,7 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.Date;
 import javax.imageio.ImageIO;
 
@@ -330,7 +331,7 @@ public class PicTest {
   @Test
   public void gettersSettersTest() {
     Pic pic = new Pic();
-    Date dte = new Date();
+    LocalDate dte = LocalDate.of(2020, 1, 1);
 
     pic.setId(1);
     pic.setEntityType(EntityType.BONSAI);

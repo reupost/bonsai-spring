@@ -14,6 +14,8 @@ import org.springframework.data.domain.Sort.Order;
 
 public class GeneralControllerHelper {
 
+  public static Integer MAX_LIST_SIZE = 300;
+
   public static Pageable getPageableFromRequest(List<String> sort, List<String> dir, int page, int size,
       String mainClass, List<String> fieldsToExclude,
       Optional<String> childClass, Optional<String> childClassPrefix,
@@ -69,8 +71,8 @@ public class GeneralControllerHelper {
     if (size < 1) {
       size = 1;
     }
-    if (size > 300) {
-      size = 300;
+    if (size > MAX_LIST_SIZE) {
+      size = MAX_LIST_SIZE;
     }
     if (page < 0) {
       page = 0;

@@ -156,7 +156,7 @@ public class DiaryEntryControllerTest {
   void findDiaryEntriesForPagePageAndSizeOutOfRangeTest2() throws Exception {
     int passedSize = 1000;
     int passedPage = 0;
-    int fixedSize = 100;
+    int fixedSize = GeneralControllerHelper.MAX_LIST_SIZE;
     int diaryEntryId = 1;
 
     ArrayList<DiaryEntry> diaryEntryList = new ArrayList<>();

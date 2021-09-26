@@ -171,7 +171,7 @@ public class BonsaiControllerTest {
   void findBonsaisForPagePageAndSizeOutOfRangeTest2() throws Exception {
     int passedSize = 1000;
     int passedPage = 0;
-    int fixedSize = 100;
+    int fixedSize = GeneralControllerHelper.MAX_LIST_SIZE;
     int bonsaiId = 1;
 
     ArrayList<Bonsai> bonsaiList = new ArrayList<>();

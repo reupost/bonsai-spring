@@ -1,5 +1,6 @@
 package com.bonsainet.bonsai.model;
 
+import java.time.LocalDate;
 import java.util.Date;
 import lombok.Data;
 
@@ -12,12 +13,12 @@ public class BonsaiDTO {
   private String name;
   private String source;
   private String stateWhenAcquired;
-  private Date dateAcquired;
+  private LocalDate dateAcquired;
   private Float costAmount;
   private Integer yearStarted;
   private Boolean isYearStartedGuess;
   private Integer yearDied;
-  private Date dateSold;
+  private LocalDate dateSold;
   private Float soldForAmount;
   private String stage;
   private String style;

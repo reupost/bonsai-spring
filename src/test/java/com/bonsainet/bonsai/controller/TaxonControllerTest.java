@@ -154,7 +154,7 @@ public class TaxonControllerTest {
   void findTaxonsForPagePageAndSizeOutOfRangeTest2() throws Exception {
     int passedSize = 1000;
     int passedPage = 0;
-    int fixedSize = 100;
+    int fixedSize = GeneralControllerHelper.MAX_LIST_SIZE;
     int taxonId = 1;
 
     ArrayList<Taxon> taxaList = new ArrayList<>();
