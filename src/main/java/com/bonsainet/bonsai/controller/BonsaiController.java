@@ -70,16 +70,21 @@ public class BonsaiController {
   }
 
   @PutMapping(path = "")
-  public Bonsai setBonsai(@Valid @RequestBody Bonsai t) {
+  public Bonsai updateBonsai(@Valid @RequestBody Bonsai t) {
     // sleep(1000);
     return bonsaiService.save(t);
   }
 
   @PutMapping(path = "/dto")
-  public BonsaiDTO setBonsai(@Valid @RequestBody BonsaiDTO bonsaiDTO) {
+  public BonsaiDTO updateBonsai(@Valid @RequestBody BonsaiDTO bonsaiDTO) {
     // sleep(1000);
     Bonsai bonsai = bonsaiService.toBonsai(bonsaiDTO);
     return bonsaiService.toDto(bonsaiService.save(bonsai));
+  }
+
+  @PostMapping(path = "/dto")
+  public BonsaiDTO newBonsai(@Valid @RequestBody BonsaiDTO bonsaiDTO) {
+    return updateBonsai(bonsaiDTO);
   }
 
   @DeleteMapping(path = "/{id}")

@@ -4,6 +4,7 @@ import com.bonsainet.bonsai.model.DiaryEntry;
 import com.bonsainet.bonsai.model.DiaryEntryDTO;
 import com.bonsainet.bonsai.service.IDiaryEntryService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -66,16 +67,28 @@ public class DiaryEntryController {
   }
 
   @PutMapping(path = "")
-  public DiaryEntry setDiaryEntry(@Valid @RequestBody DiaryEntry t) {
+  public DiaryEntry updateDiaryEntry(@Valid @RequestBody DiaryEntry diaryEntry) {
     // sleep(1000);
-    return diaryEntryService.save(t);
+    if (diaryEntry.getEntryDate() == null) {
+      diaryEntry.setEntryDate(LocalDateTime.now());
+    }
+    return diaryEntryService.save(diaryEntry);
   }
 
   @PutMapping(path = "/dto")
-  public DiaryEntryDTO setDiaryEntry(@Valid @RequestBody DiaryEntryDTO diaryEntryDTO) {
+  public DiaryEntryDTO updateDiaryEntry(@Valid @RequestBody DiaryEntryDTO diaryEntryDTO) {
     // sleep(1000);
     DiaryEntry diaryEntry = diaryEntryService.toDiaryEntry(diaryEntryDTO);
+    if (diaryEntry.getEntryDate() == null) {
+      diaryEntry.setEntryDate(LocalDateTime.now());
+    }
+    //TODO - do we update the entryDate, or leave it?
     return diaryEntryService.toDto(diaryEntryService.save(diaryEntry));
+  }
+
+  @PostMapping(path = "/dto")
+  public DiaryEntryDTO newDiaryEntry(@Valid @RequestBody DiaryEntryDTO diaryEntryDTO) {
+    return updateDiaryEntry(diaryEntryDTO);
   }
 
   @DeleteMapping(path = "/{id}")

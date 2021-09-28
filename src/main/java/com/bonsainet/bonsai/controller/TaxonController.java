@@ -1,7 +1,5 @@
 package com.bonsainet.bonsai.controller;
 
-import com.bonsainet.bonsai.model.Bonsai;
-import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.Taxon;
 
 import com.bonsainet.bonsai.model.TaxonDTO;
@@ -79,16 +77,21 @@ public class TaxonController {
   }
 
   @PutMapping(path = "")
-  public Taxon setTaxon(@Valid @RequestBody Taxon t) throws InterruptedException {
+  public Taxon updateTaxon(@Valid @RequestBody Taxon t) throws InterruptedException {
     sleep(1000);
     return taxonService.save(t);
   }
 
   @PutMapping(path = "/dto")
-  public TaxonDTO setTaxon(@Valid @RequestBody TaxonDTO taxonDTO) {
+  public TaxonDTO updateTaxon(@Valid @RequestBody TaxonDTO taxonDTO) {
     // sleep(1000);
     Taxon taxon = taxonService.toTaxon(taxonDTO);
     return taxonService.toDto(taxonService.save(taxon));
+  }
+
+  @PostMapping(path = "/dto")
+  public TaxonDTO newTaxon(@Valid @RequestBody TaxonDTO taxonDTO) {
+    return updateTaxon(taxonDTO);
   }
 
   @DeleteMapping(path = "/{id}")
