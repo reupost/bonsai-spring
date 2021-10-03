@@ -2,11 +2,14 @@ package com.bonsainet.bonsai.controller;
 
 import com.bonsainet.bonsai.model.EntityType;
 import com.bonsainet.bonsai.model.Pic;
+import com.bonsainet.bonsai.model.PicDTO;
 import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.service.IPicService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -45,13 +48,18 @@ public class PicController {
     this.picService = picService;
   }
 
+  @GetMapping(path = "/{id}")
+  public Optional<Pic> getPic(@PathVariable Integer id) {
+    return picService.findById(id);
+  }
+
   @GetMapping("/pics")
   public List<Pic> findPics() {
     return picService.findAll();
   }
 
   @GetMapping(
-      value = "/pics_page",
+      value = "/page",
       produces = MediaType.APPLICATION_JSON_VALUE)
   public Page<Pic> findPicsForPage(
       @RequestParam(required = false) EntityType entityType,
@@ -96,16 +104,16 @@ public class PicController {
     return picResults;
   }
 
-  @GetMapping("/pics/count")
+  @GetMapping("/count")
   public Long countPics() {
     return picService.count();
   }
 
   @GetMapping(
-      value = "/image",
+      value = "/image/{id}",
       produces = MediaType.IMAGE_JPEG_VALUE
   )
-  public ResponseEntity<byte[]> getImage(@RequestParam(required = true) Integer id)
+  public ResponseEntity<byte[]> getImage(@PathVariable Integer id)
       throws IOException {
     Optional<Pic> p = picService.findById(id);
     if (p.isPresent()) {
@@ -134,10 +142,10 @@ public class PicController {
   }
 
   @GetMapping(
-      value = "/thumb",
+      value = "/thumb/{id}",
       produces = MediaType.IMAGE_JPEG_VALUE
   )
-  public ResponseEntity<byte[]> getImageThumb(@RequestParam(required = true) Integer id) {
+  public ResponseEntity<byte[]> getImageThumb(@PathVariable Integer id) {
     Optional<Pic> p = picService.findById(id);
     if (p.isPresent()) {
       // TODO: how do we check if the thumbnail is ready?
@@ -160,11 +168,14 @@ public class PicController {
     }
   }
 
-  @PostMapping(path = "/pic")
+  @PostMapping(path = "")
   public ResponseEntity<Pic> setPic(@Valid @RequestParam("p") String ps,
       @Valid @NotBlank @RequestParam("file") Optional<MultipartFile> file) {
 
-    ObjectMapper objectWriter = new ObjectMapper();
+    ObjectMapper objectWriter = new ObjectMapper()
+        .findAndRegisterModules()
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     //TODO: this should be automatable, surely?
     Pic p = null;
@@ -195,7 +206,25 @@ public class PicController {
     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  @DeleteMapping(path = "/del/{id}")
+  @PutMapping(path = "/dto")
+  public ResponseEntity<Pic> updatePic(@Valid @RequestBody PicDTO picDTO) {
+    // sleep(1000);
+    try {
+      Pic pic = picService.toPic(picDTO);
+      Future<Pic> futurePic = picService.save(pic);
+      return new ResponseEntity<>(futurePic.get(), HttpStatus.OK);
+    } catch (InterruptedException | ExecutionException ie) {
+        ie.printStackTrace();
+      }
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @PostMapping(path = "/dto")
+  public ResponseEntity<Pic> newPic(@Valid @RequestBody PicDTO picDTO) {
+    return updatePic(picDTO);
+  }
+
+  @DeleteMapping(path = "/{id}")
   public ResponseEntity<Long> deletePic(@PathVariable Integer id) {
     Optional<Pic> t = picService.findById(id);
     if (t.isPresent()) {

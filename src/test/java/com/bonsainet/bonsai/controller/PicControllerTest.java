@@ -119,7 +119,7 @@ public class PicControllerTest {
         Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
         when(picService.findAll(paging)).thenReturn(pagePic);
 
-        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage + "&size=" + passedSize))
+        this.mockMvc.perform(get("/pic/page?page=" + passedPage + "&size=" + passedSize))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.content", hasSize(passedSize)))
@@ -152,7 +152,7 @@ public class PicControllerTest {
         Pageable paging = PageRequest.of(fixedPage, fixedSize, sortFinal);
         when(picService.findAll(paging)).thenReturn(pagePic);
 
-        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage + "&size=" + passedSize))
+        this.mockMvc.perform(get("/pic/page?page=" + passedPage + "&size=" + passedSize))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.content", hasSize(fixedSize)))
@@ -186,7 +186,7 @@ public class PicControllerTest {
         Pageable paging = PageRequest.of(passedPage, fixedSize, sortFinal);
         when(picService.findAll(paging)).thenReturn(pagePic);
 
-        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage + "&size=" + passedSize))
+        this.mockMvc.perform(get("/pic/page?page=" + passedPage + "&size=" + passedSize))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.content", hasSize(fixedSize)))
@@ -219,7 +219,7 @@ public class PicControllerTest {
         Pageable paging = PageRequest.of(passedPage, picList.size(), sortFinal);
         when(picService.findAll(paging)).thenReturn(pagePic);
 
-        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage +
+        this.mockMvc.perform(get("/pic/page?page=" + passedPage +
             "&size=" + picList.size() +
             "&sort=entityId&dir=asc"))
                 .andExpect(status().isOk())
@@ -255,7 +255,7 @@ public class PicControllerTest {
         Pageable paging = PageRequest.of(passedPage, picList.size(), sortFinal);
         when(picService.findAll(paging)).thenReturn(pagePic);
 
-        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage + "&size=" + picList.size() + "&sort=entityId&dir=desc"))
+        this.mockMvc.perform(get("/pic/page?page=" + passedPage + "&size=" + picList.size() + "&sort=entityId&dir=desc"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.content", hasSize(picList.size())))
@@ -289,7 +289,7 @@ public class PicControllerTest {
         Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
         when(picService.findByTitleContaining(passedFilter, paging)).thenReturn(pagePic);
 
-        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter))
+        this.mockMvc.perform(get("/pic/page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.content", hasSize(passedSize)))
@@ -323,7 +323,7 @@ public class PicControllerTest {
         Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
         when(picService.findByEntityTypeAndTitleContaining(passedEntityType, passedFilter, paging)).thenReturn(pagePic);
 
-        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter + "&entityType=" + passedEntityType))
+        this.mockMvc.perform(get("/pic/page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter + "&entityType=" + passedEntityType))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.content", hasSize(passedSize)))
@@ -356,7 +356,7 @@ public class PicControllerTest {
         Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
         when(picService.findByEntityType(passedEntityType, paging)).thenReturn(pagePic);
 
-        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage + "&size=" + passedSize + "&entityType=" + passedEntityType))
+        this.mockMvc.perform(get("/pic/page?page=" + passedPage + "&size=" + passedSize + "&entityType=" + passedEntityType))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.content", hasSize(passedSize)))
@@ -390,7 +390,7 @@ public class PicControllerTest {
         Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
         when(picService.findByEntityTypeAndEntityId(passedEntityType, passedEntityId, paging)).thenReturn(pagePic);
 
-        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage + "&size=" + passedSize + "&entityId=" + passedEntityId + "&entityType=" + passedEntityType))
+        this.mockMvc.perform(get("/pic/page?page=" + passedPage + "&size=" + passedSize + "&entityId=" + passedEntityId + "&entityType=" + passedEntityType))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.content", hasSize(passedSize)))
@@ -425,7 +425,7 @@ public class PicControllerTest {
         Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
         when(picService.findByEntityTypeAndEntityIdAndTitleContaining(passedEntityType, passedEntityId, passedFilter, paging)).thenReturn(pagePic);
 
-        this.mockMvc.perform(get("/pic/pics_page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter + "&entityType=" + passedEntityType + "&entityId=" + passedEntityId))
+        this.mockMvc.perform(get("/pic/page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter + "&entityType=" + passedEntityType + "&entityId=" + passedEntityId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.content", hasSize(passedSize)))

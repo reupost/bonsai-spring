@@ -2,6 +2,7 @@ package com.bonsainet.bonsai.service;
 
 import com.bonsainet.bonsai.model.EntityType;
 import com.bonsainet.bonsai.model.Pic;
+import com.bonsainet.bonsai.model.PicDTO;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,4 +39,8 @@ public interface IPicService {
   Page<Pic> findByTitleContaining(String title, Pageable pageable);
 
   Long count();
+
+  Pic toPic(PicDTO picDto);
+
+  PicDTO toDto(Pic pic);
 }

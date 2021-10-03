@@ -79,7 +79,6 @@ public class BonsaiService implements IBonsaiService {
   public BonsaiDTO toDto(Bonsai bonsai) {
     IBonsaiMapperImpl iBonsaiMapper = new IBonsaiMapperImpl();
     BonsaiDTO bonsaiDTO = iBonsaiMapper.toDTO(bonsai);
-    bonsaiDTO.setTaxonId(bonsai.getTaxon().getId());
     return bonsaiDTO;
   }
 }

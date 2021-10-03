@@ -3,6 +3,7 @@ package com.bonsainet.bonsai.service;
 import com.bonsainet.bonsai.misc.DocumentStorageException;
 import com.bonsainet.bonsai.model.EntityType;
 import com.bonsainet.bonsai.model.Pic;
+import com.bonsainet.bonsai.model.PicDTO;
 import com.bonsainet.bonsai.repository.PicRepository;
 import java.util.Objects;
 import java.util.UUID;
@@ -181,5 +182,18 @@ public class PicService implements IPicService {
   @Override
   public Long count() {
     return repository.count();
+  }
+
+  //TODO not a huge fan of this at all
+  public Pic toPic(PicDTO picDto) {
+    //return null;
+    IPicMapperImpl iPicMapper = new IPicMapperImpl();
+    return iPicMapper.toPic(picDto);
+  }
+
+  public PicDTO toDto(Pic pic) {
+    //return null;
+    IPicMapperImpl iPicMapper = new IPicMapperImpl();
+    return iPicMapper.toDTO(pic);
   }
 }
