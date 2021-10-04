@@ -190,9 +190,7 @@ public class PicController {
       String fileName = picService.storeFile(file.get());
       if (p.getId() != null) {
         Optional<Pic> oldPic = picService.findById(p.getId());
-        if (oldPic.isPresent()) {
-          oldPic.get().deleteImageIfExists();
-        }
+        oldPic.ifPresent(Pic::deleteImageIfExists);
       }
       p.setFileName(fileName);
     }

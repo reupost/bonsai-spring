@@ -64,8 +64,9 @@ public class PicService implements IPicService {
   public Future<Pic> save(Pic p) throws IllegalArgumentException {
     CompletableFuture<Pic> completableFuture = new CompletableFuture<>();
 
+    Optional<Pic> oldPic = Optional.empty();
     if (p.getId() != null) {
-      Optional<Pic> oldPic = findById(p.getId());
+      oldPic = findById(p.getId());
       if (oldPic.isPresent()) {
         try {
           //fill in old values for any nulls in entity to save
@@ -83,8 +84,14 @@ public class PicService implements IPicService {
     try {
       if (StringUtils.isEmpty(picToSave.getRootFolder())) picToSave.setRootFolder(this.picRootFolder);
       picToSave.setDimensions();
+      Optional<Pic> finalOldPic = oldPic;
       Executors.newCachedThreadPool().submit(() -> {
-        picToSave.setThumb();
+        if (finalOldPic.isPresent()) {
+          if (picToSave.getFileName() != finalOldPic.get().getFileName()) {
+            picToSave.setThumb();
+          }
+        }
+
         Pic pSaved = repository.save(picToSave);
         completableFuture.complete(pSaved);
       });
