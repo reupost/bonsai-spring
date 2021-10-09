@@ -22,7 +22,9 @@ public interface ITaxonService {
 
   Optional<Taxon> findById(Integer id);
 
-  Page<Taxon> findByFullNameContaining(String fullname, Pageable pageable);
+  Page<Taxon> findByFullNameContaining(String search, Pageable pageable);
+
+  Page<Taxon> findByFullNameOrCommonNameContaining(String search, Pageable pageable);
 
   Long count();
 

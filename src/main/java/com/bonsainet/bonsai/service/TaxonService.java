@@ -56,9 +56,15 @@ public class TaxonService implements ITaxonService {
   }
 
   @Override
-  public Page<Taxon> findByFullNameContaining(String fullname, Pageable pageable) {
-    return repository.findByFullNameContaining(fullname, pageable);
+  public Page<Taxon> findByFullNameContaining(String search, Pageable pageable) {
+    return repository.findByFullNameContaining(search, pageable);
   }
+
+  @Override
+  public Page<Taxon> findByFullNameOrCommonNameContaining(String search, Pageable pageable) {
+    return repository.findByFullNameOrCommonNameContaining(search, pageable);
+  }
+
 
   @Override
   public Long count() {

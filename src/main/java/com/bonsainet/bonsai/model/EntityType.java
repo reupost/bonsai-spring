@@ -1,5 +1,5 @@
 package com.bonsainet.bonsai.model;
 
 public enum EntityType {
-  BONSAI, PLANT, DIARYENTRY, SPECIES, POT, BENCH, OTHER
+  BONSAI, PLANT, DIARYENTRY, TAXON, POT, BENCH, OTHER
 }

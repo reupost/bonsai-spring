@@ -63,10 +63,10 @@ public class TaxonController {
         mainClass, toExclude, Optional.empty(), Optional.empty(), Optional.of("fullName"));
 
     Page<Taxon> taxaResults;
-    if (filter == null) {
+    if (filter == null || filter.equals("")) {
       taxaResults = taxonService.findAll(paging);
     } else {
-      taxaResults = taxonService.findByFullNameContaining(filter, paging);
+      taxaResults = taxonService.findByFullNameOrCommonNameContaining(filter, paging);
     }
     return taxaResults;
   }

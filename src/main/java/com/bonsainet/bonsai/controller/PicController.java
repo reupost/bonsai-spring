@@ -72,7 +72,7 @@ public class PicController {
   ) {
 
     List<String> toExclude = new ArrayList<>();
-    String mainClass = TaxonDTO.class.getName();
+    String mainClass = PicDTO.class.getName();
     Pageable paging = GeneralControllerHelper.getPageableFromRequest(sort, dir, page, size,
         mainClass, toExclude, Optional.empty(), Optional.empty(), Optional.of("id"));
 
