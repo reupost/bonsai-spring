@@ -12,6 +12,7 @@ public interface BonsaiRepository extends PagingAndSortingRepository<Bonsai, Int
 
   Page<Bonsai> findByNameContaining(String name, Pageable pageable);
 
-  @Query("SELECT b FROM Bonsai b, Taxon t WHERE b.taxon = t AND (b.name LIKE CONCAT('%',:filter,'%') OR t.fullName LIKE CONCAT('%',:filter,'%') OR t.commonName LIKE CONCAT('%',:filter,'%'))")
+  @Query("SELECT b FROM Bonsai b, Taxon t WHERE b.taxon = t AND (b.name LIKE CONCAT('%',:filter,'%') "
+      + "OR t.fullName LIKE CONCAT('%',:filter,'%') OR t.commonName LIKE CONCAT('%',:filter,'%'))")
   Page<Bonsai> findByNameOrTaxonContaining(@Param("filter") String filter, Pageable pageable);
 }

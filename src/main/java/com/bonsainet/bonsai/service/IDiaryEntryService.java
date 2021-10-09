@@ -26,6 +26,8 @@ public interface IDiaryEntryService {
 
   Page<DiaryEntry> findByEntryTextContaining(String text, Pageable pageable);
 
+  Page<DiaryEntry> findByEntryTextOrBonsaiContaining(String text, Pageable pageable);
+
   Long count();
 
   DiaryEntry toDiaryEntry(DiaryEntryDTO diaryEntryDto);

@@ -64,6 +64,11 @@ public class DiaryEntryService implements IDiaryEntryService {
   }
 
   @Override
+  public Page<DiaryEntry> findByEntryTextOrBonsaiContaining(String text, Pageable pageable) {
+    return repository.findByEntryTextOrBonsaiContaining(text, pageable);
+  }
+
+  @Override
   public Long count() {
     return repository.count();
   }

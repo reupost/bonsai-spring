@@ -56,7 +56,7 @@ public class DiaryEntryController {
     if (filter == null) {
       diaryEntryResults = diaryEntryService.findAll(paging);
     } else {
-      diaryEntryResults = diaryEntryService.findByEntryTextContaining(filter, paging);
+      diaryEntryResults = diaryEntryService.findByEntryTextOrBonsaiContaining(filter, paging);
     }
     return diaryEntryResults;
   }
