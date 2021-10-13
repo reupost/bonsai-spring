@@ -28,6 +28,8 @@ public class BonsaiDTO {
 
   private Integer taxonId;
 
+  private Integer userId;
+
   public BonsaiDTO() {
   }
 

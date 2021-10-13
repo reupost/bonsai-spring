@@ -273,7 +273,7 @@ public class TaxonControllerTest {
     Page<Taxon> pageTaxon = new PageImpl<>(taxaList, pageRequest, taxaList.size());
 
     Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
-    when(taxonService.findByFullNameContaining(passedFilter, paging)).thenReturn(pageTaxon);
+    when(taxonService.findByFullNameOrCommonNameContaining(passedFilter, paging)).thenReturn(pageTaxon);
 
     this.mockMvc.perform(get("/taxon/page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter))
         .andExpect(status().isOk())
@@ -281,7 +281,7 @@ public class TaxonControllerTest {
         .andExpect(jsonPath("$.content", hasSize(passedSize)))
         .andExpect(jsonPath("$.content[0].id", is(taxonId)));
 
-    verify(taxonService).findByFullNameContaining(passedFilter, paging);
+    verify(taxonService).findByFullNameOrCommonNameContaining(passedFilter, paging);
     verifyNoMoreInteractions(taxonService);
   }
 

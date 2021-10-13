@@ -41,7 +41,7 @@ public class TaxonController {
   /**
    * Get a page of taxa.
    *
-   * @param filter filter for full name contains
+   * @param filter filter for full name or common name contains
    * @param sort   sort field list
    * @param dir    sort direction list (paired with sort fields)
    * @param page   page (0-indexed)

@@ -2,6 +2,7 @@ package com.bonsainet.bonsai.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -12,7 +13,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.model.DiaryEntry;
+import com.bonsainet.bonsai.model.DiaryEntryDTO;
+import com.bonsainet.bonsai.model.User;
 import com.bonsainet.bonsai.service.DiaryEntryService;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -277,7 +281,7 @@ public class DiaryEntryControllerTest {
     Page<DiaryEntry> pageDiaryEntry = new PageImpl<>(diaryEntryList, pageRequest, diaryEntryList.size());
 
     Pageable paging = PageRequest.of(passedPage, passedSize, sortFinal);
-    when(diaryEntryService.findByEntryTextContaining(passedFilter, paging)).thenReturn(pageDiaryEntry);
+    when(diaryEntryService.findByEntryTextOrBonsaiContaining(passedFilter, paging)).thenReturn(pageDiaryEntry);
 
     this.mockMvc.perform(get("/diaryEntry/page?page=" + passedPage + "&size=" + passedSize + "&filter=" + passedFilter))
         .andExpect(status().isOk())
@@ -285,16 +289,17 @@ public class DiaryEntryControllerTest {
         .andExpect(jsonPath("$.content", hasSize(passedSize)))
         .andExpect(jsonPath("$.content[0].id", is(diaryEntryId)));
 
-    verify(diaryEntryService).findByEntryTextContaining(passedFilter, paging);
+    verify(diaryEntryService).findByEntryTextOrBonsaiContaining(passedFilter, paging);
     verifyNoMoreInteractions(diaryEntryService);
   }
 
   @Test
   void saveDiaryEntryTest() throws Exception {
     int diaryEntryId = 1;
-
+    
     DiaryEntry diaryEntry = new DiaryEntry();
     diaryEntry.setId(diaryEntryId);
+    diaryEntry.setEntryDate(LocalDateTime.now());
 
     when(diaryEntryService.save(diaryEntry)).thenReturn(diaryEntry);
 
@@ -307,6 +312,29 @@ public class DiaryEntryControllerTest {
 
     verify(diaryEntryService).save(diaryEntry);
     verifyNoMoreInteractions(diaryEntryService);
+  }
+
+  @Test
+  void updateDiaryEntryDtoTest() throws Exception {
+    int diaryEntryId = 1;
+
+    DiaryEntry diaryEntry = new DiaryEntry();
+    diaryEntry.setId(diaryEntryId);
+    DiaryEntryDTO diaryEntryDto = new DiaryEntryDTO();
+    diaryEntryDto.setId(diaryEntryId);
+
+    when(diaryEntryService.save(diaryEntry)).thenReturn(diaryEntry);
+    when(diaryEntryService.toDiaryEntry(diaryEntryDto)).thenReturn(diaryEntry);
+    when(diaryEntryService.toDto(diaryEntry)).thenReturn(diaryEntryDto);
+
+    this.mockMvc.perform(put("/diaryEntry/dto")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(diaryEntryDto)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(jsonPath("$.id", is(diaryEntryId)));
+
+    verify(diaryEntryService).save(diaryEntry);
   }
 
   @Test

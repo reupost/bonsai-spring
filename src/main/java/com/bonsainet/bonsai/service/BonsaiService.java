@@ -3,8 +3,10 @@ package com.bonsainet.bonsai.service;
 import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.Taxon;
+import com.bonsainet.bonsai.model.User;
 import com.bonsainet.bonsai.repository.BonsaiRepository;
 import com.bonsainet.bonsai.repository.TaxonRepository;
+import com.bonsainet.bonsai.repository.UserRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +22,14 @@ public class BonsaiService implements IBonsaiService {
 
   private final BonsaiRepository repository;
   private final TaxonRepository taxonRepository;
+  private final UserRepository userRepository;
 
-  public BonsaiService(ApplicationContext context, BonsaiRepository repository, TaxonRepository taxonRepository) {
+  public BonsaiService(ApplicationContext context, BonsaiRepository repository,
+      TaxonRepository taxonRepository, UserRepository userRepository) {
     this.context = context;
     this.repository = repository;
     this.taxonRepository = taxonRepository;
+    this.userRepository = userRepository;
   }
 
   @Override
@@ -73,6 +78,8 @@ public class BonsaiService implements IBonsaiService {
     Bonsai bonsai = iBonsaiMapper.toBonsai(bonsaiDto);
     Optional<Taxon> t = taxonRepository.findById(bonsaiDto.getTaxonId());
     t.ifPresent(bonsai::setTaxon);
+    Optional<User> u = userRepository.findById(bonsaiDto.getUserId());
+    u.ifPresent(bonsai::setUser);
     return bonsai;
   }
 

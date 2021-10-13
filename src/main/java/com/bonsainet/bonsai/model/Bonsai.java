@@ -41,11 +41,23 @@ public class Bonsai {
   @JoinColumn(name = "taxonId")
   private Taxon taxon;
 
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
+  @JoinColumn(name = "userId")
+  private User user;
+
   public Bonsai() {
+  }
+
+  public Bonsai(Integer id) {
+    this.id = id;
   }
 
   public Taxon getTaxon() {
     return taxon;
+  }
+
+  public User getUser() {
+    return user;
   }
 
 }

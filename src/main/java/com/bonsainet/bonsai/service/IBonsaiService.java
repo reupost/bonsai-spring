@@ -11,7 +11,6 @@ public interface IBonsaiService {
 
   List<Bonsai> findAll();
 
-
   Page<Bonsai> findAll(Pageable pageable);
 
   Bonsai save(Bonsai b);
