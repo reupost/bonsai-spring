@@ -296,7 +296,7 @@ public class DiaryEntryControllerTest {
   @Test
   void saveDiaryEntryTest() throws Exception {
     int diaryEntryId = 1;
-    
+
     DiaryEntry diaryEntry = new DiaryEntry();
     diaryEntry.setId(diaryEntryId);
     diaryEntry.setEntryDate(LocalDateTime.now());

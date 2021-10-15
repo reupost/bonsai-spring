@@ -3,7 +3,6 @@ package com.bonsainet.bonsai.controller;
 import com.bonsainet.bonsai.model.EntityType;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.model.PicDTO;
-import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.service.IPicService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

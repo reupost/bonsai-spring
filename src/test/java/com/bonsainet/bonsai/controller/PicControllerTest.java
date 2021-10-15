@@ -89,7 +89,7 @@ public class PicControllerTest {
         Long count = 1L;
         when(picService.count()).thenReturn(count);
 
-        this.mockMvc.perform(get("/pic/pics/count"))
+        this.mockMvc.perform(get("/pic/count"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().string(count.toString()));
@@ -210,6 +210,7 @@ public class PicControllerTest {
         }
 
         ArrayList<Sort.Order> sortBy = new ArrayList<>();
+        sortBy.add(new Sort.Order(Sort.Direction.ASC, "entityId"));
         sortBy.add(new Sort.Order(Sort.Direction.ASC, "id"));
         Sort sortFinal = Sort.by(sortBy);
 
@@ -246,6 +247,7 @@ public class PicControllerTest {
         }
 
         ArrayList<Sort.Order> sortBy = new ArrayList<>();
+        sortBy.add(new Sort.Order(Sort.Direction.DESC, "entityId"));
         sortBy.add(new Sort.Order(Sort.Direction.ASC, "id"));
         Sort sortFinal = Sort.by(sortBy);
 
@@ -452,7 +454,7 @@ public class PicControllerTest {
 
         String jsonPic = new ObjectMapper().writeValueAsString(pic);
 
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/pic/pic");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/pic");
         request.contentType(MediaType.APPLICATION_FORM_URLENCODED);
         request.param("p", jsonPic);
         ResultActions resultActions = this.mockMvc.perform(request)
@@ -499,7 +501,7 @@ public class PicControllerTest {
         String jsonPic = new ObjectMapper().writeValueAsString(pic);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-            .multipart("/pic/pic")
+            .multipart("/pic")
             .file(file);
         request.contentType(MediaType.APPLICATION_FORM_URLENCODED);
         request.param("p", jsonPic);
@@ -521,7 +523,7 @@ public class PicControllerTest {
     void saveBadPicTest() throws Exception {
         String jsonPic = "bad json";
 
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/pic/pic");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/pic");
         request.contentType(MediaType.APPLICATION_FORM_URLENCODED);
         request.param("p", jsonPic);
         ResultActions resultActions = this.mockMvc.perform(request)
@@ -539,7 +541,7 @@ public class PicControllerTest {
 
         when(picService.findById(picId)).thenReturn(Optional.of(pic));
 
-        this.mockMvc.perform(delete("/pic/del/1"))
+        this.mockMvc.perform(delete("/pic/1"))
                 .andExpect(status().isOk());
 
         verify(picService).findById(picId);
@@ -556,7 +558,7 @@ public class PicControllerTest {
 
         when(picService.findById(picId)).thenReturn(Optional.empty());
 
-        this.mockMvc.perform(delete("/pic/del/1"))
+        this.mockMvc.perform(delete("/pic/1"))
                 .andExpect(status().isNotFound());
 
         verify(picService).findById(picId);
@@ -583,7 +585,7 @@ public class PicControllerTest {
 
             when(picService.findById(picId)).thenReturn(Optional.of(pic));
 
-            this.mockMvc.perform(get("/pic/image?id=" + picId));
+            this.mockMvc.perform(get("/pic/image/" + picId));
             //actually returns server 500 error for some reason
 
         } catch (Exception e) {
@@ -608,7 +610,7 @@ public class PicControllerTest {
         when(picService.findById(picId)).thenReturn(Optional.empty());
 
         try {
-            this.mockMvc.perform(get("/pic/image?id=" + picId))
+            this.mockMvc.perform(get("/pic/image/" + picId))
                 .andExpect(status().isNotFound());
         } catch (Exception e) {
             e.printStackTrace();
@@ -633,7 +635,7 @@ public class PicControllerTest {
             bytes = baos.toByteArray();
             when(picService.findById(picId)).thenReturn(Optional.of(picMock));
             when(picMock.getImageThumb()).thenReturn(bytes);
-            this.mockMvc.perform(get("/pic/thumb?id=" + picId));
+            this.mockMvc.perform(get("/pic/thumb/" + picId));
             verify(picService).findById(picId);
             verifyNoMoreInteractions(picService);
             verify(picMock).getImageThumb();
@@ -668,7 +670,7 @@ public class PicControllerTest {
             when(picMock.getImageThumb())
                 .thenThrow(IOException.class)
                 .thenReturn(bytes);
-            this.mockMvc.perform(get("/pic/thumb?id=" + picId));
+            this.mockMvc.perform(get("/pic/thumb/" + picId));
             verify(picService).findById(picId);
             verify(picService).save(picMock);
             verifyNoMoreInteractions(picService);
