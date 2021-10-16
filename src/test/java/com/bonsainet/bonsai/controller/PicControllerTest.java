@@ -1,5 +1,6 @@
 package com.bonsainet.bonsai.controller;
 
+import com.bonsainet.bonsai.model.DiaryEntry;
 import com.bonsainet.bonsai.model.EntityType;
 import com.bonsainet.bonsai.model.Pic;
 import com.bonsainet.bonsai.service.PicService;
@@ -95,6 +96,23 @@ public class PicControllerTest {
                 .andExpect(content().string(count.toString()));
 
         verify(picService).count();
+        verifyNoMoreInteractions(picService);
+    }
+
+    @Test
+    void getPicByIdTest() throws Exception {
+        int picId = 1;
+        Pic pic = new Pic();
+        pic.setId(picId);
+
+        when(picService.findById(picId)).thenReturn(Optional.of(pic));
+
+        this.mockMvc.perform(get("/pic/" + picId))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.id", is(picId)));
+
+        verify(picService).findById(picId);
         verifyNoMoreInteractions(picService);
     }
 

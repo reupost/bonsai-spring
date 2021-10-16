@@ -33,7 +33,7 @@ public class UserController {
     return userService.findById(id);
   }
 
-  @GetMapping("/bonsais")
+  @GetMapping("/users")
   public List<User> findUsers() {
     return userService.findAll();
   }

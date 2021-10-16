@@ -97,7 +97,7 @@ class TaxonServiceTest {
   }
 
   @Test
-  void shouldFindByFullnameContaining() {
+  void shouldFindByFullNameContaining() {
     ArrayList<Order> sortBy = new ArrayList<>();
     sortBy.add(new Sort.Order(Sort.Direction.ASC, "family"));
     Sort sortFinal = Sort.by(sortBy);
@@ -107,6 +107,20 @@ class TaxonServiceTest {
     taxonService.findByFullNameContaining("test", paging);
 
     verify(taxonRepository).findByFullNameContaining("test", paging);
+    verifyNoMoreInteractions(taxonRepository);
+  }
+
+  @Test
+  void shouldFindByFullNameOrCommonNameContaining() {
+    ArrayList<Order> sortBy = new ArrayList<>();
+    sortBy.add(new Sort.Order(Sort.Direction.ASC, "family"));
+    Sort sortFinal = Sort.by(sortBy);
+
+    Pageable paging = PageRequest.of(0, 1, sortFinal);
+
+    taxonService.findByFullNameOrCommonNameContaining("test", paging);
+
+    verify(taxonRepository).findByFullNameOrCommonNameContaining("test", paging);
     verifyNoMoreInteractions(taxonRepository);
   }
 }

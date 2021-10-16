@@ -35,8 +35,12 @@ public class UserService implements IUserService {
 
 
   @Override
-  public User save(User b) {
-    return repository.save(b);
+  public User save(User u) {
+    if (u != null) {
+      return repository.save(u);
+    } else {
+      throw new IllegalArgumentException("invalid user");
+    }
   }
 
   @Override

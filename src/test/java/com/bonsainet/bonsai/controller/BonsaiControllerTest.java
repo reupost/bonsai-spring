@@ -53,7 +53,7 @@ public class BonsaiControllerTest {
   }
 
   @Test
-  void findBonsaiByIdTest() throws Exception {
+  void getBonsaiByIdTest() throws Exception {
     int bonsaiId = 1;
     Bonsai bonsai = new Bonsai();
     bonsai.setId(bonsaiId);

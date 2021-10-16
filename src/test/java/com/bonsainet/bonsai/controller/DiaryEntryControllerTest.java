@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.model.DiaryEntry;
 import com.bonsainet.bonsai.model.DiaryEntryDTO;
+import com.bonsainet.bonsai.model.Taxon;
 import com.bonsainet.bonsai.model.User;
 import com.bonsainet.bonsai.service.DiaryEntryService;
 import java.time.LocalDateTime;
@@ -75,6 +76,24 @@ public class DiaryEntryControllerTest {
         .andExpect(jsonPath("$[0].id", is(diaryEntryId)));
 
     verify(diaryEntryService).findAll();
+    verifyNoMoreInteractions(diaryEntryService);
+  }
+
+
+  @Test
+  void getDiaryEntryByIdTest() throws Exception {
+    int diaryEntryId = 1;
+    DiaryEntry diaryEntry = new DiaryEntry();
+    diaryEntry.setId(diaryEntryId);
+
+    when(diaryEntryService.findById(diaryEntryId)).thenReturn(Optional.of(diaryEntry));
+
+    this.mockMvc.perform(get("/diaryEntry/" + diaryEntryId))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(jsonPath("$.id", is(diaryEntryId)));
+
+    verify(diaryEntryService).findById(diaryEntryId);
     verifyNoMoreInteractions(diaryEntryService);
   }
 

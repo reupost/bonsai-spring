@@ -73,6 +73,23 @@ public class TaxonControllerTest {
   }
 
   @Test
+  void getTaxonByIdTest() throws Exception {
+    int taxonId = 1;
+    Taxon taxon = new Taxon();
+    taxon.setId(taxonId);
+
+    when(taxonService.findById(taxonId)).thenReturn(Optional.of(taxon));
+
+    this.mockMvc.perform(get("/taxon/" + taxonId))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(jsonPath("$.id", is(taxonId)));
+
+    verify(taxonService).findById(taxonId);
+    verifyNoMoreInteractions(taxonService);
+  }
+
+  @Test
   void taxaCountTest() throws Exception {
     Long count = 1L;
     when(taxonService.count()).thenReturn(count);
