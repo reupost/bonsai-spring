@@ -2,7 +2,6 @@ package com.bonsainet.bonsai.model;
 
 import java.time.LocalDate;
 import javax.persistence.*;
-import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

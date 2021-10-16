@@ -5,6 +5,7 @@ import com.bonsainet.bonsai.model.UserDTO;
 import com.bonsainet.bonsai.model.TaxonDTO;
 import com.bonsainet.bonsai.service.IUserService;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -76,8 +77,10 @@ public class UserController {
 
   @PutMapping(path = "/dto")
   public UserDTO updateUser(@Valid @RequestBody UserDTO userDTO) {
-    // sleep(1000);
     User user = userService.toUser(userDTO);
+    if (user.getDateRegistered() == null) {
+      user.setDateRegistered(LocalDateTime.now());
+    }
     return userService.toDto(userService.save(user));
   }
 
