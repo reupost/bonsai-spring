@@ -90,6 +90,8 @@ public class PicService implements IPicService {
           if (picToSave.getFileName() != finalOldPic.get().getFileName()) {
             picToSave.setThumb();
           }
+        } else {
+          picToSave.setThumb();
         }
 
         Pic pSaved = repository.save(picToSave);
