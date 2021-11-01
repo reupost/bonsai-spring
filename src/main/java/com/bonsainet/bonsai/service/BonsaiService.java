@@ -39,9 +39,18 @@ public class BonsaiService implements IBonsaiService {
 
   @Override
   public Page<Bonsai> findAll(Pageable pageable) {
-    return (Page<Bonsai>) repository.findAll(pageable);
+    return repository.findAll(pageable);
   }
 
+  @Override
+  public List<Bonsai> findAll(User user) {
+    return repository.findByUser(user);
+  }
+
+  @Override
+  public Page<Bonsai> findAll(User user, Pageable pageable) {
+    return repository.findByUser(user, pageable);
+  }
 
   @Override
   public Bonsai save(Bonsai b) {
@@ -59,6 +68,16 @@ public class BonsaiService implements IBonsaiService {
   }
 
   @Override
+  public Page<Bonsai> findByTaxon(Taxon taxon, Pageable pageable) {
+    return repository.findByTaxon(taxon, pageable);
+  }
+
+  @Override
+  public Page<Bonsai> findByTaxon(User user, Taxon taxon, Pageable pageable) {
+    return repository.findByUserAndTaxon(user, taxon, pageable);
+  }
+
+  @Override
   public Page<Bonsai> findByNameContaining(String name, Pageable pageable) {
     return repository.findByNameContaining(name, pageable);
   }
@@ -68,8 +87,23 @@ public class BonsaiService implements IBonsaiService {
   }
 
   @Override
+  public Page<Bonsai> findByNameContaining(User user, String name, Pageable pageable) {
+    return repository.findByUserAndNameContaining(user, name, pageable);
+  }
+
+  @Override
+  public Page<Bonsai> findByNameOrTaxonContaining(User user, String name, Pageable pageable) {
+    return repository.findByUserAndNameOrTaxonContaining(user, name, pageable);
+  }
+
+  @Override
   public Long count() {
     return repository.count();
+  }
+
+  @Override
+  public Long count(User user) {
+    return repository.countByUser(user);
   }
 
   //TODO not a huge fan of this at all

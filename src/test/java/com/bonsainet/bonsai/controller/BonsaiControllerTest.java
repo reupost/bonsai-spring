@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.service.BonsaiService;
+import com.bonsainet.bonsai.service.UserService;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,12 +42,15 @@ public class BonsaiControllerTest {
   @MockBean
   private BonsaiService bonsaiService;
 
+  @MockBean
+  private UserService userService;
+
   @Autowired
   private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
   @BeforeEach
   void setup() {
-    BonsaiController bonsaiController = new BonsaiController(bonsaiService);
+    BonsaiController bonsaiController = new BonsaiController(bonsaiService, userService);
     mockMvc = MockMvcBuilders.standaloneSetup(bonsaiController)
         .setMessageConverters(jacksonMessageConverter)
         .build();

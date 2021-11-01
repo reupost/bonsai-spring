@@ -3,8 +3,10 @@ package com.bonsainet.bonsai.controller;
 import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.TaxonDTO;
+import com.bonsainet.bonsai.model.User;
 import com.bonsainet.bonsai.service.IBonsaiService;
 
+import com.bonsainet.bonsai.service.IUserService;
 import java.util.Collections;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +23,12 @@ import java.util.Optional;
 @RequestMapping("bonsai")
 public class BonsaiController {
 
-  // @Autowired
   private IBonsaiService bonsaiService;
+  private IUserService userService;
 
-  public BonsaiController(IBonsaiService bonsaiService) {
+  public BonsaiController(IBonsaiService bonsaiService, IUserService userService) {
     this.bonsaiService = bonsaiService;
+    this.userService = userService;
   }
 
   @GetMapping(path = "/{id}")
@@ -34,13 +37,23 @@ public class BonsaiController {
   }
 
   @GetMapping("/bonsais")
-  public List<Bonsai> findBonsais() {
-    return bonsaiService.findAll();
+  public List<Bonsai> findBonsais(@RequestParam(required = false) Integer userId) {
+    if (userId == null) {
+      return bonsaiService.findAll();
+    } else {
+      Optional<User> optionalUser = userService.findById(userId);
+      if (optionalUser.isPresent()) {
+        return bonsaiService.findAll(optionalUser.get());
+      } else {
+        return Collections.emptyList();
+      }
+    }
   }
 
 
   @GetMapping("/page")
   public Page<Bonsai> findBonsaisForPage(
+      @RequestParam(required = false) Integer userId,
       @RequestParam(required = false) String filter,
       @RequestParam(required = false) List<String> sort,
       @RequestParam(required = false) List<String> dir,
@@ -55,18 +68,40 @@ public class BonsaiController {
         Optional.of(childClass), Optional.of("taxon"), Optional.of("tag"));
 
     Page<Bonsai> bonsaiResults;
-    if (filter == null || filter.length() == 0) {
-      bonsaiResults = bonsaiService.findAll(paging);
+    if (userId == null) {
+      if (filter == null || filter.length() == 0) {
+        bonsaiResults = bonsaiService.findAll(paging);
+      } else {
+        bonsaiResults = bonsaiService.findByNameOrTaxonContaining(filter, paging);
+      }
     } else {
-      // bonsaiResults = bonsaiService.findByNameContaining(filter, paging);
-      bonsaiResults = bonsaiService.findByNameOrTaxonContaining(filter, paging);
+      Optional<User> optionalUser = userService.findById(userId);
+      if (optionalUser.isPresent()) {
+        if (filter == null || filter.length() == 0) {
+          bonsaiResults = bonsaiService.findAll(optionalUser.get(), paging);
+        } else {
+          bonsaiResults = bonsaiService.findByNameOrTaxonContaining(optionalUser.get(),
+              filter, paging);
+        }
+      } else {
+        bonsaiResults = Page.empty();
+      }
     }
     return bonsaiResults;
   }
 
   @GetMapping("/count")
-  public Long countBonsais() {
-    return bonsaiService.count();
+  public Long countBonsais(@RequestParam(required = false) Integer userId) {
+    if (userId == null) {
+      return bonsaiService.count();
+    } else {
+      Optional<User> optionalUser = userService.findById(userId);
+      if (optionalUser.isPresent()) {
+        return bonsaiService.count(optionalUser.get());
+      } else {
+        return 0L;
+      }
+    }
   }
 
   @PutMapping(path = "")
