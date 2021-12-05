@@ -7,9 +7,11 @@ import com.bonsainet.bonsai.model.User;
 import com.bonsainet.bonsai.repository.BonsaiRepository;
 import com.bonsainet.bonsai.repository.TaxonRepository;
 import com.bonsainet.bonsai.repository.UserRepository;
+import com.bonsainet.bonsai.specs.BonsaiSpecification;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,6 +37,16 @@ public class BonsaiService implements IBonsaiService {
   @Override
   public List<Bonsai> findAll() {
     return (List<Bonsai>) repository.findAll();
+  }
+
+  @Override
+  public List<Bonsai> findAll(BonsaiSpecification bonsaiSpecification) {
+    return repository.findAll(bonsaiSpecification);
+  }
+
+  @Override
+  public List<Bonsai> findAll(Specification<Bonsai> bonsaiSpecification) {
+    return repository.findAll(bonsaiSpecification);
   }
 
   @Override

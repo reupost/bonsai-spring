@@ -4,14 +4,19 @@ import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.model.BonsaiDTO;
 import com.bonsainet.bonsai.model.Taxon;
 import com.bonsainet.bonsai.model.User;
+import com.bonsainet.bonsai.specs.BonsaiSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.domain.Specification;
 
 public interface IBonsaiService {
 
   List<Bonsai> findAll();
+
+  List<Bonsai> findAll(BonsaiSpecification bonsaiSpecification);
+  List<Bonsai> findAll(Specification<Bonsai> bonsaiSpecification);
 
   Page<Bonsai> findAll(Pageable pageable);
 

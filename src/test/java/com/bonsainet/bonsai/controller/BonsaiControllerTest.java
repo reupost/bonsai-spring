@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.bonsainet.bonsai.model.Bonsai;
 import com.bonsainet.bonsai.service.BonsaiService;
+import com.bonsainet.bonsai.service.TaxonService;
 import com.bonsainet.bonsai.service.UserService;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -32,6 +33,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.client.RestTemplate;
 
 @ContextConfiguration(classes = Bonsai.class)
 @WebMvcTest(controllers = BonsaiController.class)
@@ -41,16 +43,17 @@ public class BonsaiControllerTest {
 
   @MockBean
   private BonsaiService bonsaiService;
-
   @MockBean
   private UserService userService;
+  @MockBean
+  private TaxonService taxonService;
 
   @Autowired
   private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
   @BeforeEach
   void setup() {
-    BonsaiController bonsaiController = new BonsaiController(bonsaiService, userService);
+    BonsaiController bonsaiController = new BonsaiController(bonsaiService, userService, taxonService);
     mockMvc = MockMvcBuilders.standaloneSetup(bonsaiController)
         .setMessageConverters(jacksonMessageConverter)
         .build();
@@ -324,6 +327,7 @@ public class BonsaiControllerTest {
 
     verify(bonsaiService).save(bonsai);
     verifyNoMoreInteractions(bonsaiService);
+    //TODO: take a look at new RestTemplate().exchange(url, HttpMethod.POST, ...)
   }
 
   @Test
