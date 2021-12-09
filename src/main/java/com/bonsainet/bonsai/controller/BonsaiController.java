@@ -16,11 +16,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Map;
-import org.apache.tomcat.jni.Local;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.data.domain.Page;
@@ -34,6 +32,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("bonsai")
@@ -70,8 +69,18 @@ public class BonsaiController {
   }
 
   @GetMapping("/find")
-  public List<Bonsai> findBonsaisSpecification(@RequestParam String columnFilters) {
+  public Page<Bonsai> findBonsaisSpecification(@RequestParam String columnFilters,
+      @RequestParam(required = false) List<String> sort,
+      @RequestParam(required = false) List<String> dir,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
     Specification<Bonsai> specBonsai = new BonsaiSpecification();
+    List<String> toExclude = Collections.singletonList("taxonDTO");
+    String mainClass = BonsaiDTO.class.getName();
+    String childClass = TaxonDTO.class.getName();
+    Pageable paging = GeneralControllerHelper.getPageableFromRequest(sort, dir, page, size,
+        mainClass, toExclude,
+        Optional.of(childClass), Optional.of("taxon"), Optional.of("tag"));
     try {
       JSONObject jsonObject = new JSONObject(columnFilters.trim());
       Iterator<String> keys = jsonObject.keys();
@@ -94,19 +103,19 @@ public class BonsaiController {
               specBonsai = specBonsai.and(bs);
             } catch (NoSuchFieldException | DateTimeParseException e) {
               //do nothing, i.e. ignore
+              log.error("No such field: " + key);
             }
           }
         }
       }
     } catch (JSONException e) {
-      //TODO: log this?
+      log.error("Bad json in columnFilters: " + columnFilters.substring(0,100));
       return null;
     }
 
-    return bonsaiService.findAll(specBonsai);
+    return bonsaiService.findAll(specBonsai, paging);
   }
 
-  //TODO should possibly refactor to allow any combination of filtering parameters
   @GetMapping("/page")
   public Page<Bonsai> findBonsaisForPage(
       @RequestParam(required = false) Integer userId,

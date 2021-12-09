@@ -15,8 +15,7 @@ public interface IBonsaiService {
 
   List<Bonsai> findAll();
 
-  List<Bonsai> findAll(BonsaiSpecification bonsaiSpecification);
-  List<Bonsai> findAll(Specification<Bonsai> bonsaiSpecification);
+  Page<Bonsai> findAll(Specification<Bonsai> bonsaiSpecification, Pageable pageable);
 
   Page<Bonsai> findAll(Pageable pageable);
 
