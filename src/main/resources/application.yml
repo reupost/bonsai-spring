@@ -1,0 +1,48 @@
+spring:
+  main:
+    banner-mode: off
+  profiles:
+    active: default
+  datasource:
+    url: jdbc:mysql://localhost:3306/bonsaismall
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 20MB
+      max-request-size: 21MB
+  security:
+    oauth2:
+      client:
+        registration:
+          cognito:
+            clientId: ${COGNITO_CLIENTID}
+            clientSecret: ${COGNITO_CLIENTSECRET}
+            scope: openid
+            redirect-uri: http://localhost:8081/login/oauth2/code/cognito
+            clientName: bonsai-spring-client
+        provider:
+          cognito:
+            issuerUri: https://cognito-idp.eu-central-1.amazonaws.com/${COGNITO_USERPOOLID}
+            userNameAttribute: cognito:username
+cognito:
+  logoutUrl: ${COGNITO_LOGOUTURL}
+
+logging:
+  level:
+    org.springframework: ERROR
+    com.bonsainet: DEBUG
+  pattern:
+    file: "%d %p %c{1.} [%t] %m%n"
+    console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+
+server:
+  port: 8081
+
+pic:
+  rootfolder: F:\\_Projects\\_Personal\\Bonsai\\bonsai_pics_spring
