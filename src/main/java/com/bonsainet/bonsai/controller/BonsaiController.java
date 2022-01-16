@@ -26,6 +26,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -50,7 +53,11 @@ public class BonsaiController {
   }
 
   @GetMapping(path = "/{id}")
+  @PreAuthorize("hasRole('Cognito_bonsaiAdmin_Role')")
   public Optional<Bonsai> getBonsai(@PathVariable Integer id) {
+//    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//    if (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("Cognito_bonsaiAdmin_Role"))) {
+//    }
     return bonsaiService.findById(id);
   }
 
