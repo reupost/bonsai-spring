@@ -1,9 +1,6 @@
 package com.bonsainet.bonsai.model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,9 +9,6 @@ import javax.persistence.Table;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "user")
@@ -22,10 +16,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Slf4j
 public class User { //implements UserDetails {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   String ROLE_PREFIX = "ROLE_";
 
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   private String userName;

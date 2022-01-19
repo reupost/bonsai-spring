@@ -34,13 +34,11 @@ public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
       Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
 
       authorities.forEach(authority -> {
-        if (OidcUserAuthority.class.isInstance(authority)) {
+        if (authority instanceof OidcUserAuthority) {
           OidcUserAuthority oidcUserAuthority = (OidcUserAuthority)authority;
 
           OidcIdToken idToken = oidcUserAuthority.getIdToken();
           OidcUserInfo userInfo = oidcUserAuthority.getUserInfo();
-
-          //TODO: add default user role; clean up cognito role to remove arn etc.
 
           // Map the claims found in idToken and/or userInfo
           // to one or more GrantedAuthority's and add it to mappedAuthorities
@@ -55,7 +53,7 @@ public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
             });
           }
 
-        } else if (OAuth2UserAuthority.class.isInstance(authority)) {
+        } else if (authority instanceof OAuth2UserAuthority) {
           OAuth2UserAuthority oauth2UserAuthority = (OAuth2UserAuthority)authority;
 
           Map<String, Object> userAttributes = oauth2UserAuthority.getAttributes();

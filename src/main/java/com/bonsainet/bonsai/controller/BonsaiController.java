@@ -26,9 +26,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,6 +38,7 @@ import java.util.Optional;
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("bonsai")
+@PreAuthorize("hasRole('USER')") //must be logged-in
 public class BonsaiController {
 
   private IBonsaiService bonsaiService;
@@ -53,22 +53,49 @@ public class BonsaiController {
   }
 
   @GetMapping(path = "/{id}")
-  @PreAuthorize("hasRole('Cognito_bonsaiAdmin_Role')")
   public Optional<Bonsai> getBonsai(@PathVariable Integer id) {
-//    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//    if (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("Cognito_bonsaiAdmin_Role"))) {
-//    }
-    return bonsaiService.findById(id);
+    Optional<Bonsai> bonsai = bonsaiService.findById(id);
+
+    //TODO: should all this be in the service layer?
+
+    if (SecurityHelper.isAuthenticatedUserAdmin()) {
+      return bonsai;
+    } else {
+      //is it the user's bonsai to look at?
+      if (bonsai.isPresent()) {
+        if (SecurityHelper.isUserTheAuthenticatedUser(bonsai.get().getUser())) {
+          return bonsai;
+        } else {
+          throw new AccessDeniedException("You do not have permission to view that");
+        }
+      } else {
+        return bonsai;
+      }
+    }
   }
 
   @GetMapping("/bonsais")
   public List<Bonsai> findBonsais(@RequestParam(required = false) Integer userId) {
+    Optional<User> authUser = SecurityHelper.getAuthenticatedUserAsUser(userService);
     if (userId == null) {
-      return bonsaiService.findAll();
+      if (SecurityHelper.isAuthenticatedUserAdmin()) {
+        return bonsaiService.findAll();
+      } else {
+        if (authUser.isPresent()) {
+          return bonsaiService.findAll(authUser.get());
+        } else {
+          return Collections.emptyList();
+        }
+      }
     } else {
       Optional<User> optionalUser = userService.findById(userId);
       if (optionalUser.isPresent()) {
-        return bonsaiService.findAll(optionalUser.get());
+        if (SecurityHelper.isAuthenticatedUserAdmin() ||
+            SecurityHelper.isUserTheAuthenticatedUser(optionalUser.get())) {
+          return bonsaiService.findAll(optionalUser.get());
+        } else {
+          return Collections.emptyList();
+        }
       } else {
         return Collections.emptyList();
       }
