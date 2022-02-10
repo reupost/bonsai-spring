@@ -2,10 +2,10 @@ package com.bonsainet.bonsai;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import com.nimbusds.jose.shaded.json.JSONArray;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import net.minidev.json.JSONArray;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
